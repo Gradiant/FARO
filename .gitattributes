@@ -1,0 +1,8 @@
+models/corp_mail_list.txt filter=lfs diff=lfs merge=lfs -text
+models/crf_classic_step5.joblib filter=lfs diff=lfs merge=lfs -text
+models/crf_classic_step2.joblib filter=lfs diff=lfs merge=lfs -text
+models/crf_classic_step3.joblib filter=lfs diff=lfs merge=lfs -text
+models/crf_classic_step4.joblib filter=lfs diff=lfs merge=lfs -text
+models/crf_professions_v1.joblib filter=lfs diff=lfs merge=lfs -text
+models/email_detector.joblib filter=lfs diff=lfs merge=lfs -text
+models/crf_classic_step1.joblib filter=lfs diff=lfs merge=lfs -text

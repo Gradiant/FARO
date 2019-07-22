@@ -1,0 +1,124 @@
+logfilter_entity_list:
+    - Email
+    - FinancialData
+    - DNI_SPAIN
+    - MOBILE
+    - MONEY
+    - FIRMA
+    - PER_PROF_ORG
+
+sensitivity_list:
+    - low
+    - medium
+    - high
+
+
+sensitivity_multiple_kpis: 3
+
+sensitivy_keys_dump:
+    - person_position_organization
+    - monetary_quantity
+    - signature
+    - personal_email
+    - mobile_phone_number
+    - financial_data
+    - document_id
+
+
+ent_keys_dump:
+    PER: person
+    PROF: jobposition
+    ORG: organization
+    LOC: localization
+    PER_PROF_ORG: person_position_organization
+    FinancialData: financial_data
+    MONEY: monetary_quantity
+    Email: email
+    DNI_SPAIN: document_id
+    MOBILE: mobile_pone_number
+    PHONE: phone_number
+    SIGNATURE: signature
+
+
+sensitivity:
+    low: 
+        person_position_organization:
+            min: 1
+            max: 6
+        monetary_quantity:
+            min: 1
+            max: 6
+
+        signature:
+            min: 0
+            max: 0
+
+        personal_email:
+            min: 1
+            max: 2
+
+        mobile_phone_number:
+            min: 1
+            max: 2
+
+        financial_data:
+            min: 0
+            max: 0
+
+        document_id:
+            min: 0
+            max: 0
+
+    medium:
+        person_position_organization:
+            min: 6
+            max: 65535
+        monetary_quantity:
+            min: 6
+            max: 65535
+        signature:
+            min: 1
+            max: 2
+
+        personal_email:
+            min: 2
+            max: 65535
+
+        mobile_phone_number:
+            min: 2
+            max: 4
+
+        financial_data:
+            min: 0
+            max: 0
+
+        document_id:
+            min: 0
+            max: 0
+
+    high:
+        person_position_organization:
+            min: 65535
+            max: 65535
+        monetary_quantity:
+            min: 65535
+            max: 65535
+        signature:
+            min: 2
+            max: 65535
+
+        personal_email:
+            min: 65535
+            max: 65535
+
+        mobile_phone_number:
+            min: 4
+            max: 65535
+
+        financial_data:
+            min: 1
+            max: 65535
+
+        document_id:
+            min: 1
+            max: 65535

@@ -1,0 +1,201 @@
+# Copyright (c) 2019 by Gradiant. All rights reserved.
+
+# This code cannot be used, copied, modified and/or distributed without
+
+# the express permission of the authors.
+
+'''
+
+Created on 6th of May (2019)
+
+@author: Hector Cerezo
+
+'''
+
+import logging
+import re
+from collections import OrderedDict
+from .ner import NER
+from .email import Corporative_Detection
+from .ner_regex import Regex_Ner
+from luhn import verify as verify_card
+from stdnum import get_cc_module
+
+logger = logging.getLogger(__name__)
+
+
+class Detector(object):
+    """ Main class for extracting KPIs of confidential documents
+
+    """
+
+    def _get_kpis(self, sent_list):
+        """ Extract KPIs from document """
+
+        total_ent_list = []
+
+        # Flag to indicate that a sign entity is expected (if True)
+        next_person_has_signed = False
+        person_signed_idx = 0
+
+        offset = 0
+
+        for sent in sent_list:
+            # extract entities (ML)
+            if self.ml_ner is not None:
+                ent_list_ner = self.ml_ner.get_model_entities(sent)
+
+                for ent in ent_list_ner:
+                    # storing as entity/label pair
+
+                    new_ent = [ent[0], ent[1], "NER",
+                               str(int(ent[2]) + offset),
+                               str(int(ent[3]) + offset)]
+
+                    total_ent_list.append(new_ent)
+
+            # extract entities (Regex)
+            ent_list_regex = self.regex_ner.regex_detection(sent)
+
+            for ent_key in ent_list_regex.keys():
+                for ent in ent_list_regex[ent_key]:
+                    # We treat differently common corporative/personal emails
+                    if ent_key == "Email":
+                        if not self.corp_email_class.is_not_corp_email(
+                                ent[0]):
+                            total_ent_list.append((
+                                ent[0], "Corp_Email",
+                                ent[1], str(ent[2] + offset),
+                                str(ent[3] + offset)))
+
+                        else:
+                            total_ent_list.append((ent[0], "Email",
+                                                   ent[1],
+                                                   str(ent[2] + offset),
+                                                   str(ent[3] + offset)))
+
+                    elif ent_key == "SIGNATURE":
+                        next_person_has_signed = True
+                        person_signed_idx = ent[3] + offset
+
+                    elif ent_key == "CreditCard":
+                        sent = re.sub(r'[\-_*+,\(\).]{1,}', "", ent[0])
+                        sent = re.sub(r'[ ]{1,}', "", sent)
+
+                        if verify_card(sent):
+                            logger.debug(
+                                "Credit card accepted {}.{}".format(
+                                    sent, ent[0]))
+
+                            total_ent_list.append((ent[0], "FinancialData",
+                                                   ent[1],
+                                                   str(ent[2] + offset),
+                                                   str(ent[3] + offset)))
+                        else:
+                            logger.debug("Wrong credit card {}.{}.".format(
+                                sent, ent[0]))
+
+                    elif ent_key in ["FinancialData", "DNI_SPAIN"]:
+                        sent = re.sub(r'[\-_*+,\(\).]{1,}', "", ent[0])
+                        sent = re.sub(r'[ ]{1,}', "", sent)
+
+                        if (get_cc_module('es', 'dni').is_valid(sent) or
+                            get_cc_module('es', 'ccc').is_valid(sent) or
+                            get_cc_module('es', 'cif').is_valid(sent) or
+                            get_cc_module('es', 'iban').is_valid(sent) or
+                                get_cc_module('es', 'nie').is_valid(sent)):
+
+                            total_ent_list.append((ent[0], ent_key, ent[1],
+                                                   str(ent[2] + offset),
+                                                   str(ent[3] + offset)))
+                        else:
+                            logger.debug("Invalid data {}.{}".format(
+                                sent, ent[0]))
+
+                    else:
+                        total_ent_list.append((ent[0], ent_key, ent[1],
+                                               str(ent[2] + offset),
+                                               str(ent[3] + offset)))
+
+            if next_person_has_signed:
+                min_itx_signed = 65555
+                id_min_itx = -1
+
+                for i in range(len(total_ent_list)):
+                    _ent = total_ent_list[i]
+                    if _ent[1] == "PER":
+                        if int(_ent[4]) > person_signed_idx:
+                            if int(_ent[4]) < min_itx_signed:
+                                min_itx_signed = int(_ent[4])
+                                id_min_itx = i
+                                next_person_has_signed = False
+
+                if id_min_itx != -1:
+                    _ent = total_ent_list[id_min_itx]
+
+                    total_ent_list.append((_ent[0], "SIGNATURE", _ent[2],
+                                           _ent[3], _ent[4]))
+
+            offset += len(sent)
+
+        if next_person_has_signed:
+            min_itx_signed = 65555
+            id_min_itx = -1
+
+            for i in range(len(total_ent_list)):
+                ent = total_ent_list[i]
+                if ent[1] == "PER":
+                    if int(ent[4]) > person_signed_idx:
+                        if int(ent[4]) < min_itx_signed:
+                            min_itx_signed = int(ent[4])
+                            id_min_itx = i
+                            next_person_has_signed = False
+
+            if id_min_itx != -1:
+                ent = total_ent_list[id_min_itx]
+
+                total_ent_list.append((ent[0], "SIGNATURE", ent[2],
+                                       ent[3], ent[4]))
+
+        return total_ent_list
+
+    def _get_unique_ents(self, ent_list):
+        """ Process the entities to obtain a json object """
+
+        unique_ent_dict = OrderedDict()
+        for _ent in ent_list:
+            if _ent[1] not in unique_ent_dict:
+                unique_ent_dict[_ent[1]] = OrderedDict()
+
+            if _ent[0] not in unique_ent_dict[_ent[1]]:
+                unique_ent_dict[_ent[1]][_ent[0]] = 0
+
+            unique_ent_dict[_ent[1]][_ent[0]] += 1
+
+        return unique_ent_dict
+
+    def analyse(self, sent_list):
+        """ Obtain KPIs from a document and obtain the output in the right format (json)
+
+        Keyword arguments:
+        sent_list -- list of sentences to obtain the entities
+
+        """
+
+        total_ent_list = self._get_kpis(sent_list)
+        unique_ent_dict = self._get_unique_ents(total_ent_list)
+
+        return unique_ent_dict
+
+    def __init__(self, nlp, crf_list, email_detector, crf_ner_classic,
+                 corp_mail_list):
+        """ Intialization """
+
+        if nlp is not None:
+            self.ml_ner = NER(nlp, None, crf_list, crf_ner_classic)
+        else:
+            self.ml_ner = None
+
+        self.regex_ner = Regex_Ner()
+        self.corp_email_class = Corporative_Detection(
+            email_detector, corp_mail_list)
