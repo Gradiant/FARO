@@ -7,27 +7,32 @@ CP_EMAIL_ADDRESS_V0 = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 CP_CREDIT_CARD_V0 = (r"(?:(?P<visa>((?<![0-9])(?<![0-9][,.]))4[0-9]{12}(?:[0-9]{3})?)|(?P<mastercard>((?<![0-9])(?<![0-9][,.]))5[1-5][0-9]{14})|(?P<discover>((?<![0-9])(?<![0-9][,.]))6(?:011|5[0-9][0-9])[0-9]{12}))")
 
 CP_CREDIT_CARD_GEN_V0 = (r"([0-9]{13}(?:[0-9]{3})?)|([0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4})")
-CP_IBAN_V0 = r"\b[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){5}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?\b"
+CP_IBAN_V0 = r"\b[A-Z]{2}[0-9]{2}(?:\s+?[0-9]{4}){5}(?!(?:\s+?[0-9]){3})(?:\s+?[0-9]{1,2})?\b"
 
-CP_DNI_V0 = r"(\s+|[\(])[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z](\s+|[\)\.\],:])"
-CP_CIF_V0 = r"(\s+|[\(])[A-Za-z][\-\. ]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\s+|[\)\.\],:])"
+CP_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}\b"
+CP_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}(\s*[0-9]{4}){5}\b"
+
+CP_DNI_V0 = r"(\b|[\(])[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z](\s+|[\)\.\],:])"
+CP_CIF_V0 = r"(\b|[\(])[A-Za-z][\-\. ]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\s+|[\)\.\],:])"
 
 CP_DNI_CIF_NIE_V0 = r"([a-z]|[A-Z]|[0-9])[0-9]{7}([a-z]|[A-Z]|[0-9])"
-CP_NI_UK_V0 = r"\s+[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]?\s+"
+CP_NI_UK_V0 = r"\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]?\b"
 
-CP_PHONE_NUMBER_V0 = r"\s+(\+34|0034|34)?[\s|\-|\.]?[8|9][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\s+(?!(?:[ ]?[0-9]){1,})"
+CP_PHONE_NUMBER_V0 = r"\b(?!(?:\s?[0-7]){1,})(\(?\s*(\+34|0034|34)\s*\)?\s*)?[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
+
+
 CP_MOBILE_PHONE_NUMBER_V0 = r"(?!(?:[]?[0-9]){1,})\s+(\+34|0034|34|\(\+34\))?[\s|\-|\.]?[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\s+(?!(?:[ ]?[0-9]){1,})"
 
 CP_MONEY_V0 = r"\$\d+(.\d{3,})*(,\d{2,})*(\.\d*)?"
 CP_MONEY_V1 = r"\$([1-9]{1}[0-9]{0,2}(\,[0-9]{3})*(\.[0-9]{0,2})?|[1-9]{1}[0-9]{0,}(\.[0-9]{0,2})?|0(\.[0-9]{0,2})?|(\.[0-9]{1,2}))"
-CP_EURO_V0 = r"(\d+\.)*\d+(,\d{2,})*(\.\d*)?(€|[ ]+euros\W|[ ]+de[ ]+euros\W|[ ]+EUR\W)"
+CP_EURO_V0 = r"(?i)(\d+\.)*\d+(,\d{2,})*(\.\d*)?(\s*€|\s*euros|\s*de\s+euros|\s*eur)"
 
 CP_FIRMA_V0 = r"Firmado por|Firmado|Fdo\.|Signed by|Firma\s|firma del representante"
 
 DICT_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
               "CreditCard": [(CP_CREDIT_CARD_V0, "CP_CREDIT_CARD_V0")],
               #(CP_CREDIT_CARD_GEN_V0, "CP_CREDIT_CARD_GEN_V0"),
-              "FinancialData": [(CP_IBAN_V0, "CP_IBAN_V0")],
+              "FinancialData": [(CP_IBAN_V1, "CP_IBAN_V1")],
               "DNI_SPAIN": [(CP_DNI_V0, "CP_DNI_V0"),
                             (CP_CIF_V0, "CP_CIF_V0"),
                             #(CP_DNI_CIF_NIE_V0, "CP_DNI_CIF_NIE_V0")

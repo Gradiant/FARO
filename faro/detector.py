@@ -13,13 +13,14 @@ Created on 6th of May (2019)
 '''
 
 import logging
-import re
 from collections import OrderedDict
 from .ner import NER
 from .email import Corporative_Detection
 from .ner_regex import Regex_Ner
+from .utils import clean_text
 from luhn import verify as verify_card
 from stdnum import get_cc_module
+
 
 logger = logging.getLogger(__name__)
 
@@ -79,8 +80,7 @@ class Detector(object):
                         person_signed_idx = ent[3] + offset
 
                     elif ent_key == "CreditCard":
-                        sent = re.sub(r'[\-_*+,\(\).]{1,}', "", ent[0])
-                        sent = re.sub(r'[ ]{1,}', "", sent)
+                        sent = clean_text(ent[0])
 
                         if verify_card(sent):
                             logger.debug(
@@ -96,14 +96,13 @@ class Detector(object):
                                 sent, ent[0]))
 
                     elif ent_key in ["FinancialData", "DNI_SPAIN"]:
-                        sent = re.sub(r'[\-_*+,\(\).]{1,}', "", ent[0])
-                        sent = re.sub(r'[ ]{1,}', "", sent)
-
+                        sent = clean_text(ent[0])
+                        
                         if (get_cc_module('es', 'dni').is_valid(sent) or
                             get_cc_module('es', 'ccc').is_valid(sent) or
                             get_cc_module('es', 'cif').is_valid(sent) or
                             get_cc_module('es', 'iban').is_valid(sent) or
-                                get_cc_module('es', 'nie').is_valid(sent)):
+                            get_cc_module('es', 'nie').is_valid(sent)):
 
                             total_ent_list.append((ent[0], ent_key, ent[1],
                                                    str(ent[2] + offset),
