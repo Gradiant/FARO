@@ -81,7 +81,7 @@ class Sensitivity_Scorer(object):
                     entity_dict[key])
 
             elif key == "SIGNATURE":
-                if "sign" not in result_dict:
+                if "signature" not in result_dict:
                     result_dict["signature"] = 0
 
                 result_dict["signature"] = len(entity_dict[key])

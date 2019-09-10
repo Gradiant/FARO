@@ -4,8 +4,8 @@ logfilter_entity_list:
     - DNI_SPAIN
     - MOBILE
     - MONEY
-    - FIRMA
     - PER_PROF_ORG
+    - SIGNATURE
 
 sensitivity_list:
     - low
@@ -15,7 +15,7 @@ sensitivity_list:
 
 sensitivity_multiple_kpis: 3
 
-sensitivy_keys_dump:
+sensitivity_keys_dump:
     - person_position_organization
     - monetary_quantity
     - signature

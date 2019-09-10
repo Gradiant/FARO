@@ -130,6 +130,21 @@ class RegexTest(unittest.TestCase):
                         "{} Mobile phone was detected {}".format(
                             self.shortDescription(),
                             result))
+
+    def test_2_CP_MOBILE_NUMBER_V0(self):
+        """ Test the detection of a mobile phone number """
+
+        test = "Mi teléfono es 45688 888 888 "
+        ner = ner_regex.Regex_Ner()
+        
+        result = ner.regex_detection(test)
+
+        print ("xxxxxxxxxxxxxxxxxxxxx RESULT xxxxxxxxxxxxx ", result)
+        
+        self.assertTrue("MOBILE" not in result,
+                        "{} Mobile phone was detected {}".format(
+                            self.shortDescription(),
+                            result))
         
     def test_iban_CP_IBAN_V0(self):
         """ Test the detection of the IBAN account """

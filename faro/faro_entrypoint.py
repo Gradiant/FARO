@@ -177,7 +177,7 @@ def faro_execute(params):
     scorer = Sensitivity_Scorer(config["sensitivity"],
                                 config["sensitivity_list"],
                                 config["sensitivity_multiple_kpis"])
-
+    
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
     # dump the score to file or stdout (if dump flag is activated)
@@ -190,7 +190,10 @@ def faro_execute(params):
             f_out.write("{}\n".format(json.dumps(dict_result)))
 
     else:
-        dump_keys_list = config["sensitivy_keys_dump"]
+
+        logger.info("DICTRESULT {}".format(dict_result))
+        
+        dump_keys_list = config["sensitivity_keys_dump"]
 
         panda_dict = OrderedDict()
         panda_dict["id_file"] = params.input_file
