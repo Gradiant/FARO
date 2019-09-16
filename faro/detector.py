@@ -18,6 +18,7 @@ from .ner import NER
 from .email import Corporative_Detection
 from .ner_regex import Regex_Ner
 from .utils import clean_text
+from .custom_word import Custom_Word_Detector
 from luhn import verify as verify_card
 from stdnum import get_cc_module
 
@@ -135,6 +136,13 @@ class Detector(object):
                     total_ent_list.append((_ent[0], "SIGNATURE", _ent[2],
                                            _ent[3], _ent[4]))
 
+            # detection of custom words
+            custom_list = self.custom_detector.search_custom_words(sent)
+            for _ent in custom_list:
+                total_ent_list.append((_ent[0], _ent[1], _ent[0],
+                                       str(_ent[2] + offset),
+                                       str(_ent[3] + offset)))
+                    
             offset += len(sent)
 
         if next_person_has_signed:
@@ -155,7 +163,7 @@ class Detector(object):
 
                 total_ent_list.append((ent[0], "SIGNATURE", ent[2],
                                        ent[3], ent[4]))
-
+                
         return total_ent_list
 
     def _get_unique_ents(self, ent_list):
@@ -187,13 +195,25 @@ class Detector(object):
         return unique_ent_dict
 
     def __init__(self, nlp, crf_list, email_detector, crf_ner_classic,
-                 corp_mail_list):
-        """ Intialization """
+                 corp_mail_list, custom_word_list):
+        """ Intialization
+
+        Keyword Arguments:
+        nlp -- a spacy model or None
+        crf_list -- list of crfs for custom entities detection
+        email_detector -- detector of corporative emails
+        crf_ner_classic -- list of crfs for classic ner detection
+        corp_mail_list -- list with typical corporative names
+        custom_word_list -- list with custom words
+
+        """
 
         if nlp is not None:
             self.ml_ner = NER(nlp, None, crf_list, crf_ner_classic)
         else:
             self.ml_ner = None
+
+        self.custom_detector = Custom_Word_Detector(nlp, custom_word_list)
 
         self.regex_ner = Regex_Ner()
         self.corp_email_class = Corporative_Detection(

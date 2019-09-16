@@ -104,6 +104,12 @@ class Sensitivity_Scorer(object):
 
                 result_dict["mobile_phone_number"] = len(entity_dict[key])
 
+            elif key == "CUSTOM":
+                if "custom_words" not in result_dict:
+                    result_dict["custom_words"] = 0
+
+                result_dict["custom_words"] = len(entity_dict[key])
+                    
         score = self._get_ranking(result_dict)
 
         return {"score": score, "summary": result_dict}

@@ -50,17 +50,22 @@ def init_detector(config):
                 corp_mail_list.append(line)
 
     # build the system here
-
     nlp = None
     if "nlp_model" in config["detection"]:
         nlp = spacy.load(config["detection"]["nlp_model"])
 
+    custom_word_list = []
+
+    if "custom_word_list" in config:
+        custom_word_list = config["custom_word_list"]
+        
     my_detector = Detector(nlp,
                            crf_model_list,
                            load(config[
                                "detection"]["personal_email_detection"]),
                            crf_ner_classic,
-                           corp_mail_list=corp_mail_list)
+                           corp_mail_list=corp_mail_list,
+                           custom_word_list=custom_word_list)
 
     return my_detector
 

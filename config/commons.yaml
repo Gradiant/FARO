@@ -6,6 +6,7 @@ logfilter_entity_list:
     - MONEY
     - PER_PROF_ORG
     - SIGNATURE
+    - CUSTOM
 
 sensitivity_list:
     - low
@@ -23,6 +24,7 @@ sensitivity_keys_dump:
     - mobile_phone_number
     - financial_data
     - document_id
+    - custom_words
 
 
 ent_keys_dump:
@@ -38,7 +40,16 @@ ent_keys_dump:
     MOBILE: mobile_pone_number
     PHONE: phone_number
     SIGNATURE: signature
+    CUSTOM: custom_words
 
+custom_word_list:
+   - total
+   - confidencial
+   - contrato
+   - crédito
+   - oferta
+   - importe
+   - factura
 
 sensitivity:
     low: 
@@ -69,6 +80,10 @@ sensitivity:
             min: 0
             max: 0
 
+        custom_words:
+            min: 1
+            max: 65535
+
     medium:
         person_position_organization:
             min: 6
@@ -96,6 +111,10 @@ sensitivity:
             min: 0
             max: 0
 
+        custom_words:
+            min: 65535
+            max: 65535
+
     high:
         person_position_organization:
             min: 65535
@@ -122,3 +141,8 @@ sensitivity:
         document_id:
             min: 1
             max: 65535
+
+        custom_words:
+            min: 65535
+            max: 65535
+
