@@ -135,13 +135,12 @@ def faro_execute(params):
         with open("config/nolanguage.yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
 
-    # joining two configurations dict
+    # joining two dicts with configurations
     config = {**config, **commons_config}
 
     my_detector = init_detector(config)
 
     logger.info("Analysing {}".format(params.input_file))
-
     accepted_entity_dict = my_detector.analyse(file_lines)
 
     # TODO: translate dictionary keys to build a coherent tool
@@ -190,11 +189,7 @@ def faro_execute(params):
             f_out.write("{}\n".format(json.dumps(dict_result)))
 
     else:
-
-        logger.info("DICTRESULT {}".format(dict_result))
-        
         dump_keys_list = config["sensitivity_keys_dump"]
-
         panda_dict = OrderedDict()
         panda_dict["id_file"] = params.input_file
         panda_dict["score"] = dict_result["score"]
