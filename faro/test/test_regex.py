@@ -283,6 +283,86 @@ class RegexTest(unittest.TestCase):
                              self.shortDescription(),
                              result["PHONE"][0]))
 
+    def test_generic_money_v0(self):
+        """ Detection of money quantities """
+
+        test = "el total de la factura es 1,000."
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+
+        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
+            self.shortDescription(),
+            result))
+
+        # search for the rule CP_MONEY_V1
+        for i in range(len(result["MONEY"])):
+            if result["MONEY"][i][1] == "CP_MONEY_V1":
+                idx = i
+
+        self.assertEqual(result["MONEY"][idx][0], "1,000",
+                         "{} wrong currency detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["MONEY"]))
+
+    def test_generic_money_v1(self):
+        """ Detection of money quantities """
+
+        test = "el total de la factura es 1.000,000."
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+
+        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
+            self.shortDescription(),
+            result))
+
+        # search for the rule CP_MONEY_V0
+        for i in range(len(result["MONEY"])):
+            if result["MONEY"][i][1] == "CP_MONEY_V0":
+                idx = i
+
+        self.assertEqual(result["MONEY"][idx][0], "1.000,000",
+                         "{} wrong currency detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["MONEY"]))
+
+    def test_generic_money_v2(self):
+        """ Detection of money quantities """
+
+        test = "el total de la factura es 1.000,000,52."
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+
+        self.assertTrue("MONEY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
+
+        # search for the rule CP_MONEY_V0
+        for i in range(len(result["MONEY"])):
+            if result["MONEY"][i][1] == "CP_MONEY_V0":
+                idx = i
+
+        self.assertEqual(result["MONEY"][idx][0], "1.000,000,52",
+                         "{} wrong currency detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["MONEY"]))
+
+    def test_generic_money_v3(self):
+        """ Detection of money quantities """
+
+        test = "el total de la factura es C42.333.333"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+
+        self.assertTrue("MONEY" not in result,
+                        "{} MONEY not detected {}".format(
+                            self.shortDescription(),
+                            result))
+        
     def test_money_CP_EURO_V0(self):
         """ Detection of euro currency """
 
@@ -409,7 +489,7 @@ class RegexTest(unittest.TestCase):
 
         # search where euro is rules matches the sentence
         for i in range(len(result["DNI_SPAIN"])):
-            if result["DNI_SPAIN"][i][1] == "CP_DNI_CIF_NIE_V0":
+            if result["DNI_SPAIN"][i][1] == "CP_CIF_V0":
                 idx = i
         
         self.assertEqual(result["DNI_SPAIN"][idx][0], "A99151276",

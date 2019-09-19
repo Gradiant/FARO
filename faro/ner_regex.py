@@ -13,20 +13,23 @@ CP_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}\b"
 CP_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}(\s*[0-9]{4}){5}\b"
 
 CP_DNI_V0 = r"(\b|[\(])[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z](\s+|[\)\.\],:])"
-CP_CIF_V0 = r"(\b|[\(])[A-Za-z][\-\. ]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\s+|[\)\.\],:])"
+CP_CIF_V0 = r"(\b|[\(])[A-Za-z][\-\.\s]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\b|[\)\.\],:])"
 
-CP_DNI_CIF_NIE_V0 = r"([a-z]|[A-Z]|[0-9])[0-9]{7}([a-z]|[A-Z]|[0-9])"
 CP_NI_UK_V0 = r"\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]?\b"
 
-CP_PHONE_NUMBER_V0 = r"\b(?!(?:\s?[0-7]){1,})(\(?\s*(\+34|0034|34)\s*\)?\s*)?[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
+CP_PHONE_NUMBER_V0 = r"\b(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
 
 
-CP_MOBILE_PHONE_NUMBER_V0 = r"(?!(?:[]?[0-9]){1,})\s+(\+34|0034|34|\(\+34\))?[\s|\-|\.]?[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\s+(?!(?:[ ]?[0-9]){1,})"
+#CP_MOBILE_PHONE_NUMBER_V0 = r"(?!(?:[]?[0-9]){1,})\s+(\+34|0034|34|\(\+34\))?[\s|\-|\.]?[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\s+(?!(?:[ ]?[0-9]){1,})"
 
-CP_MONEY_V0 = r"\$\d+(.\d{3,})*(,\d{2,})*(\.\d*)?"
-CP_MONEY_V1 = r"\$([1-9]{1}[0-9]{0,2}(\,[0-9]{3})*(\.[0-9]{0,2})?|[1-9]{1}[0-9]{0,}(\.[0-9]{0,2})?|0(\.[0-9]{0,2})?|(\.[0-9]{1,2}))"
+
+CP_MOBILE_PHONE_NUMBER_V0 = r"\b(\+34|0034|34|\(\+34\))?[\s|\-|\.]?(?<![0-9])[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\b"
+
+CP_MOBILE_PHONE_NUMBER_V1 = r"\b(?<![\d])\b[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\b"
+
+CP_MONEY_V0 = r"\b(?<!\.)\d+(\.\d{3,})+(,\d{2,})*(\.\d*)?\b"
+CP_MONEY_V1 = r"\b\d+(,\d{2,})\b"
 CP_EURO_V0 = r"(?i)(\d+\.)*\d+(,\d{2,})*(\.\d*)?(\s*€|\s*euros|\s*de\s+euros|\s*eur)"
-
 CP_FIRMA_V0 = r"Firmado por|Firmado|Fdo\.|Signed by|Firma\s|firma del representante"
 
 DICT_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
@@ -35,11 +38,10 @@ DICT_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
               "FinancialData": [(CP_IBAN_V1, "CP_IBAN_V1")],
               "DNI_SPAIN": [(CP_DNI_V0, "CP_DNI_V0"),
                             (CP_CIF_V0, "CP_CIF_V0"),
-                            #(CP_DNI_CIF_NIE_V0, "CP_DNI_CIF_NIE_V0")
                             ],
               "NI_UK": [(CP_NI_UK_V0, "CP_NI_UK_V0")],
               "PHONE": [(CP_PHONE_NUMBER_V0, "CP_PHONE_NUMBER_V0")],
-              "MOBILE": [(CP_MOBILE_PHONE_NUMBER_V0,
+              "MOBILE": [(CP_MOBILE_PHONE_NUMBER_V1,
                           "CP_MOBILE_PHONE_NUMBER_V0")],
               "MONEY": [(CP_MONEY_V0, "CP_MONEY_V0"),
                         (CP_MONEY_V1, "CP_MONEY_V1"),
