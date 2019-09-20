@@ -5,7 +5,7 @@ import gensim.utils as gensim_utils
 def clean_text(message):
     """ Delete extra characters from text before validation """
 
-    sent = re.sub(r'[\-_*+,\(\).]{1,}', "", message)
+    sent = re.sub(r'[\-_*+,\(\).:]{1,}', "", message)
     sent = re.sub(r'[ ]{1,}', "", sent)
 
     return sent

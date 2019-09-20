@@ -165,6 +165,25 @@ class RegexTest(unittest.TestCase):
                              self.shortDescription(),
                              result["FinancialData"][0]))
 
+    def test_iban_CP_IBAN_APPROX_V1(self):
+        """ Test the detection of the IBAN account """
+
+        test = "This is the IBAN of the account ES91 2100 xx34 ."
+        ner = ner_regex.Regex_Ner()
+
+        result = ner.regex_detection(test)
+
+        self.assertTrue("FinancialData" in result,
+                        "{} IBAN was not detected {}".format(
+                            self.shortDescription(),
+                            result))
+
+        self.assertEqual(result["FinancialData"][0][0],
+                         "ES91 2100 xx34",
+                         "{} wrong IBAN detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["FinancialData"][0]))
+        
     def test_is_not_iban_CP_IBAN_V0(self):
         """ Test IBAN is not detected """
         
@@ -283,6 +302,86 @@ class RegexTest(unittest.TestCase):
                              self.shortDescription(),
                              result["PHONE"][0]))
 
+    def test_card_CP_PHONE_NUMBER_APPROX_V0(self):
+        """ Detection of phone number """
+
+        test = "tfno.: ESP 98000000"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+        
+        self.assertTrue("PHONE" in result, "{} PHONE was not detected {}".format(
+            self.shortDescription(),
+            result))
+
+        self.assertEqual(clean_text(result["PHONE"][0][0]), "98000000",
+                         " {} wrong phone detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["PHONE"][0]))
+
+    def test_card_CP_PHONE_NUMBER_APPROX_V1(self):
+        """ Detection of phone number """
+
+        test = "teléfono: ESP 98000000"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+        
+        self.assertTrue("PHONE" in result, "{} PHONE was not detected {}".format(
+            self.shortDescription(),
+            result))
+
+        self.assertEqual(clean_text(result["PHONE"][0][0]), "98000000",
+                         " {} wrong phone detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["PHONE"][0]))
+
+    def test_card_CP_PHONE_NUMBER_APPROX_V2(self):
+        """ Detection of phone number """
+
+        test = "tel.: ESP 98000000"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+        
+        self.assertTrue("PHONE" in result, "{} PHONE was not detected {}".format(
+            self.shortDescription(),
+            result))
+
+        self.assertEqual(clean_text(result["PHONE"][0][0]), "98000000",
+                         " {} wrong phone detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["PHONE"][0]))
+        
+    def test_card_CP_PHONE_NUMBER_APPROX_V3(self):
+        """ Detection of phone number """
+
+        test = "fax: ESP 98000000"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+        
+        self.assertTrue("PHONE" not in result, "{} PHONE was detected but it shouldn't{}".format(
+            self.shortDescription(),
+            result))
+
+    def test_card_CP_MOBILE_NUMBER_APPROX_V0(self):
+        """ Detection of phone number """
+
+        test = "móvil: ESP 98000000"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+        
+        self.assertTrue("MOBILE" in result, "{} Mobile phone was not detected {}".format(
+            self.shortDescription(),
+            result))
+        
+        self.assertEqual(clean_text(result["MOBILE"][0][0]), "98000000",
+                         " {} wrong mobile detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["MOBILE"][0]))
+        
     def test_generic_money_v0(self):
         """ Detection of money quantities """
 
