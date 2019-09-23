@@ -448,7 +448,7 @@ class RegexTest(unittest.TestCase):
                          "{} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
                              result["MONEY"]))
-
+        
     def test_generic_money_v3(self):
         """ Detection of money quantities """
 
@@ -462,6 +462,30 @@ class RegexTest(unittest.TestCase):
                             self.shortDescription(),
                             result))
         
+    def test_generic_money_v4(self):
+        """ Detection of money quantities """
+
+        test = "el total de la factura es 1.000,000,52."
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+
+        self.assertTrue("MONEY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
+
+        idx = -1
+        # search for the rule CP_MONEY_V0
+        for i in range(len(result["MONEY"])):
+            if result["MONEY"][i][1] == "CP_MONEY_V1":
+                idx = i
+
+        self.assertEqual(idx, -1,
+                         "{} Wrong quantity detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["MONEY"]))
+            
     def test_money_CP_EURO_V0(self):
         """ Detection of euro currency """
 
@@ -571,8 +595,6 @@ class RegexTest(unittest.TestCase):
                          " {} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
                              result["MONEY"]))
-
-
         
     def test_cif_company(self):
         """ Test the detection of the CIF of the company """
@@ -600,8 +622,12 @@ class RegexTest(unittest.TestCase):
         """ Test the detection of mail hacks """
 
         test = "Enviar todos vuestros datos a infoAThacktextDOTcom"
+
+        CP_EMAIL_HACK_V0 = r"[a-zA-Z0-9_.+-]+\s?(\(|-)?\s?(AT|at)\s?(\)|-)?\s?[a-zA-Z0-9-]+\s?(\(|-)?\s?(DOT|dot)\s?(\)|-)?\s?[a-zA-Z0-9-.]+"
+
+        HACK_REGEX = {"Email_Hack": [(CP_EMAIL_HACK_V0, "CP_EMAIL_HACK_V0")]}
         
-        ner = ner_regex.Regex_Ner(dict_regex=ner_regex.HACK_REGEX)
+        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
         result = ner.regex_detection(test)
 
         print ("EMAIL HACK ", result)
@@ -613,7 +639,7 @@ class RegexTest(unittest.TestCase):
 
         test = "Enviar todos vuestros datos a info AT hacktext DOT com"
 
-        ner = ner_regex.Regex_Ner(dict_regex=ner_regex.HACK_REGEX)
+        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
         result = ner.regex_detection(test)
         
         print ("EMAIL HACK ", result)
@@ -625,7 +651,7 @@ class RegexTest(unittest.TestCase):
 
         test = "Enviar todos vuestros datos a info (AT) hacktext (DOT) com"
 
-        ner = ner_regex.Regex_Ner(dict_regex=ner_regex.HACK_REGEX)
+        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
         result = ner.regex_detection(test)
 
         print ("EMAIL HACK ", result)
@@ -637,7 +663,7 @@ class RegexTest(unittest.TestCase):
 
         test = "Enviar todos vuestros datos a info-AT-hacktext-DOT-com"
 
-        ner = ner_regex.Regex_Ner(dict_regex=ner_regex.HACK_REGEX)
+        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
         result = ner.regex_detection(test)
 
         print ("EMAIL HACK ", result)
@@ -649,7 +675,7 @@ class RegexTest(unittest.TestCase):
         
         test = "Enviar todos vuestros datos a info-at-hacktext-dot-com"
                 
-        ner = ner_regex.Regex_Ner(dict_regex=ner_regex.HACK_REGEX)
+        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
         result = ner.regex_detection(test)
 
         print ("EMAIL HACK ", result)
@@ -661,7 +687,7 @@ class RegexTest(unittest.TestCase):
 
         test = "Enviar todos vuestros datos a at-dot"
                 
-        ner = ner_regex.Regex_Ner(dict_regex=ner_regex.HACK_REGEX)
+        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
         result = ner.regex_detection(test)
 
         print ("EMAIL HACK ", result)

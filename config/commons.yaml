@@ -37,7 +37,7 @@ ent_keys_dump:
     MONEY: monetary_quantity
     Email: email
     DNI_SPAIN: document_id
-    MOBILE: mobile_pone_number
+    MOBILE: mobile_phone_number
     PHONE: phone_number
     SIGNATURE: signature
     CUSTOM: custom_words
