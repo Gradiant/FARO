@@ -35,7 +35,7 @@ CP_MOBILE_PHONE_NUMBER_APPROX_V0 = r"(?i)\bmóvil.*?\K([0-9][\s\-.]*){6,}\b"
 
 CP_MONEY_V0 = r"\b(?<!\.)\d+(\.\d{3,})+(,\d{2,})*(\.\d*)?\b"
 CP_MONEY_V1 = r"\b\d+(,\d{2,})\b"
-CP_EURO_V0 = r"(?i)(\d+\.)*\d+(,\d{2,})*(\.\d*)?(\s*€|\s*euros|\s*de\s+euros|\s*eur)"
+CP_EURO_V0 = r"(?i)(\d+\.)*\d+(,\d{2,})*(\.\d*)?(?=(\s*€|\s*euros|\s*de\s+euros|\s*eur))"
 CP_FIRMA_V0 = r"Firmado por|Firmado|Fdo\.|Signed by|Firma\s|firma del representante"
 
 DICT_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],

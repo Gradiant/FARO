@@ -479,7 +479,7 @@ class RegexTest(unittest.TestCase):
             if result["MONEY"][i][1] == "CP_EURO_V0":
                 idx = i
         
-        self.assertEqual(result["MONEY"][idx][0], "1,000€",
+        self.assertEqual(result["MONEY"][idx][0], "1,000",
                          " {} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
                              result["MONEY"]))
@@ -501,7 +501,7 @@ class RegexTest(unittest.TestCase):
             if result["MONEY"][i][1] == "CP_EURO_V0":
                 idx = i
         
-        self.assertEqual(result["MONEY"][idx][0], "1,000 euros",
+        self.assertEqual(result["MONEY"][idx][0], "1,000",
                          " {} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
                              result["MONEY"]))
@@ -523,7 +523,7 @@ class RegexTest(unittest.TestCase):
             if result["MONEY"][i][1] == "CP_EURO_V0":
                 idx = i
         
-        self.assertEqual(result["MONEY"][idx][0], "1000 euros",
+        self.assertEqual(result["MONEY"][idx][0], "1000",
                          " {} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
                              result["MONEY"]))
@@ -545,7 +545,7 @@ class RegexTest(unittest.TestCase):
             if result["MONEY"][i][1] == "CP_EURO_V0":
                 idx = i
         
-        self.assertEqual(result["MONEY"][idx][0], "1,000.00 euros",
+        self.assertEqual(result["MONEY"][idx][0], "1,000.00",
                          " {} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
                              result["MONEY"]))
@@ -567,7 +567,7 @@ class RegexTest(unittest.TestCase):
             if result["MONEY"][i][1] == "CP_EURO_V0":
                 idx = i
         
-        self.assertEqual(result["MONEY"][idx][0], "1,000.00 Euros",
+        self.assertEqual(result["MONEY"][idx][0], "1,000.00",
                          " {} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
                              result["MONEY"]))
