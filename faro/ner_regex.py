@@ -19,9 +19,6 @@ CP_NI_UK_V0 = r"\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]?\b"
 
 CP_PHONE_NUMBER_V0 = r"\b(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
 
-
-#CP_MOBILE_PHONE_NUMBER_V0 = r"(?!(?:[]?[0-9]){1,})\s+(\+34|0034|34|\(\+34\))?[\s|\-|\.]?[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\s+(?!(?:[ ]?[0-9]){1,})"
-
 CP_PHONE_NUMBER_APPROX_V0 = r"(?i)\b(?:(?<=tfno).*?)([0-9][\s\-.]*){6,}\b"
 CP_PHONE_NUMBER_APPROX_V1 = r"(?i)\b(?:(?<=teléfono).*?)([0-9][\s\-.]*){6,}\b"
 CP_PHONE_NUMBER_APPROX_V2 = r"(?i)\b(?:(?<=tel.).*?)([0-9][\s\-.]*){6,}\b"
@@ -30,7 +27,6 @@ CP_PHONE_NUMBER_APPROX_V3 = r"(?i)\b(tfno|tel\.|teléfono).*?\K([0-9][\s\-.]*){6
 CP_MOBILE_PHONE_NUMBER_V0 = r"\b(\+34|0034|34|\(\+34\))?[\s|\-|\.]?(?<![0-9])[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\b"
 
 CP_MOBILE_PHONE_NUMBER_V1 = r"\b(?<![\d])\b[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\b"
-#CP_MOBILE_PHONE_NUMBER_APPROX_V0 = r"(?i)\b(?:(?<=móvil).*?)([0-9][\s\-.]*){6,}\b"
 CP_MOBILE_PHONE_NUMBER_APPROX_V0 = r"(?i)\bmóvil.*?\K([0-9][\s\-.]*){6,}\b"
 
 CP_MONEY_V0 = r"\b(?<!\.)\d+(\.\d{3,})+(,\d{2,})*(\.\d*)?\b"
@@ -47,9 +43,6 @@ DICT_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
                             ],
               "NI_UK": [(CP_NI_UK_V0, "CP_NI_UK_V0")],
               "PHONE": [(CP_PHONE_NUMBER_V0, "CP_PHONE_NUMBER_V0"),
-#                        (CP_PHONE_NUMBER_APPROX_V0, "CP_PHONE_NUMBER_APPROX_V0"),
-#                        (CP_PHONE_NUMBER_APPROX_V1, "CP_PHONE_NUMBER_APPROX_V1"),
-#                        (CP_PHONE_NUMBER_APPROX_V2, "CP_PHONE_NUMBER_APPROX_V2"),
                         (CP_PHONE_NUMBER_APPROX_V3, "CP_PHONE_NUMBER_APPROX_V3"),
               ],
               "MOBILE": [(CP_MOBILE_PHONE_NUMBER_V1,
@@ -60,12 +53,6 @@ DICT_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
                         (CP_MONEY_V1, "CP_MONEY_V1"),
                         (CP_EURO_V0, "CP_EURO_V0")],
               "SIGNATURE": [(CP_FIRMA_V0, "CP_FIRMA_V0")]}
-
-
-CP_EMAIL_HACK_V0 = r"[a-zA-Z0-9_.+-]+\s?(\(|-)?\s?(AT|at)\s?(\)|-)?\s?[a-zA-Z0-9-]+\s?(\(|-)?\s?(DOT|dot)\s?(\)|-)?\s?[a-zA-Z0-9-.]+"
-
-HACK_REGEX = {"Email_Hack": [(CP_EMAIL_HACK_V0, "CP_EMAIL_HACK_V0")]}
-ONLY_EMAIL_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")]}
 
 
 class Regex_Ner(object):
