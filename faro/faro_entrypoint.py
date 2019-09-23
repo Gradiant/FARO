@@ -104,7 +104,8 @@ def faro_execute(params):
     logger.debug("OUTPUTENTITYFILE {}".format(output_entity_file))
 
     # parse input file and join sentences if requested
-    file_lines = parse_file(input_file).split("\n")
+    file_lines, metadata = parse_file(input_file)
+    file_line = file_lines.split("\n")
 
     new_file_lines = []
     for line in file_lines:
@@ -159,7 +160,8 @@ def faro_execute(params):
 
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
-                           "datetime": st}
+                           "datetime": st,
+                           "Content-Type":metadata["Content-Type"]}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
         else:
             # Only show entities appearing in logfilter_entity_list
@@ -174,7 +176,8 @@ def faro_execute(params):
 
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
-                           "datetime": st}
+                           "datetime": st,
+                           "Content-Type": metadata["Content-Type"]}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
     # score the document, given the extracted entities
@@ -184,6 +187,9 @@ def faro_execute(params):
     
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
+    # Adding metadata of fyle type to output
+    dict_result["content-type"] = metadata["Content-Type"]
+    
     # dump the score to file or stdout (if dump flag is activated)
     logging.debug("JSON (Entities detected) {}".format(
         json.dumps(dict_result)))
@@ -210,6 +216,11 @@ def faro_execute(params):
                     panda_dict[_key] = None
                 else:
                     panda_dict[_key] = 0
+
+        if isinstance(metadata["Content-Type"], list):
+            panda_dict["content-type"] = metadata["Content-Type"][0]
+        else:
+            panda_dict["content-type"] = metadata["Content-Type"]
 
         df = pd.DataFrame(panda_dict, index=[0])
         print(df.to_csv(header="False", index=False).split("\n")[1])
