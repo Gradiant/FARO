@@ -105,7 +105,12 @@ def faro_execute(params):
 
     # parse input file and join sentences if requested
     file_lines, metadata = parse_file(input_file)
-    file_line = file_lines.split("\n")
+    file_lines = file_lines.split("\n")
+
+    if isinstance(metadata["Content-Type"], list):
+        content_type = str(metadata["Content-Type"][0])
+    else:
+        content_type = metadata["Content-Type"]
 
     new_file_lines = []
     for line in file_lines:
@@ -161,7 +166,7 @@ def faro_execute(params):
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
                            "datetime": st,
-                           "Content-Type":metadata["Content-Type"]}
+                           "Content-Type": content_type}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
         else:
             # Only show entities appearing in logfilter_entity_list
@@ -177,7 +182,7 @@ def faro_execute(params):
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
                            "datetime": st,
-                           "Content-Type": metadata["Content-Type"]}
+                           "Content-Type": content_type}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
     # score the document, given the extracted entities
@@ -188,7 +193,7 @@ def faro_execute(params):
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
     # Adding metadata of fyle type to output
-    dict_result["content-type"] = metadata["Content-Type"]
+    dict_result["content-type"] = content_type
     
     # dump the score to file or stdout (if dump flag is activated)
     logging.debug("JSON (Entities detected) {}".format(
@@ -217,10 +222,7 @@ def faro_execute(params):
                 else:
                     panda_dict[_key] = 0
 
-        if isinstance(metadata["Content-Type"], list):
-            panda_dict["content-type"] = metadata["Content-Type"][0]
-        else:
-            panda_dict["content-type"] = metadata["Content-Type"]
-
+        panda_dict["content-type"] = content_type
+        
         df = pd.DataFrame(panda_dict, index=[0])
         print(df.to_csv(header="False", index=False).split("\n")[1])
