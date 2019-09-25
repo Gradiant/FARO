@@ -7,6 +7,7 @@ def clean_text(message):
 
     sent = re.sub(r'[\-_*+,\(\).:]{1,}', "", message)
     sent = re.sub(r'[ ]{1,}', "", sent)
+    sent = re.sub(r'(?i)\bnº', "", sent)
 
     return sent
 

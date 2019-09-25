@@ -100,7 +100,7 @@ class RegexTest(unittest.TestCase):
     def test_0_CP_MOBILE_NUMBER_V0(self):
         """ Test the detection of a phone number """
 
-        test = "Mi teléfono es 688 888 888 "
+        test = "Mi teléfono móvil es 688 888 888 "
         ner = ner_regex.Regex_Ner()
         
         result = ner.regex_detection(test)
@@ -284,6 +284,23 @@ class RegexTest(unittest.TestCase):
                          " {} wrong ni detected. Detected {}".format(
                              self.shortDescription(),
                              result["NI_UK"][0]))
+
+    def test_card_CP_DNI_V0_with_v2(self):
+        """ Detection of DNI v0 rule with Nº stuck to the number """
+
+        test = "el N.I.F. Nº15373458B."
+
+        ner = ner_regex.Regex_Ner()
+        result = ner.regex_detection(test)
+
+        self.assertTrue("DNI_SPAIN" in result, "{} DNI_SPAIN was not detected {}".format(
+            self.shortDescription(),
+            result))
+
+        self.assertEqual(clean_text(result["DNI_SPAIN"][0][0]), "15373458B",
+                         " {} wrong dni detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["DNI_SPAIN"][0]))
         
     def test_card_CP_PHONE_NUMBER_V0(self):
         """ Detection of phone number """
