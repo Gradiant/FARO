@@ -168,6 +168,7 @@ def faro_execute(params):
                            "datetime": st,
                            "Content-Type": content_type}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
+            
         else:
             # Only show entities appearing in logfilter_entity_list
             filtered_json = OrderedDict()

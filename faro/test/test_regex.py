@@ -407,19 +407,19 @@ class RegexTest(unittest.TestCase):
         ner = ner_regex.Regex_Ner()
         result = ner.regex_detection(test)
 
-        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
+        self.assertTrue("PROB_CURRENCY" in result, "{} MONEY was not detected {}".format(
             self.shortDescription(),
             result))
 
         # search for the rule CP_MONEY_V1
-        for i in range(len(result["MONEY"])):
-            if result["MONEY"][i][1] == "CP_MONEY_V1":
+        for i in range(len(result["PROB_CURRENCY"])):
+            if result["PROB_CURRENCY"][i][1] == "CP_MONEY_V1":
                 idx = i
 
-        self.assertEqual(result["MONEY"][idx][0], "1,000",
+        self.assertEqual(result["PROB_CURRENCY"][idx][0], "1,000",
                          "{} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
-                             result["MONEY"]))
+                             result["PROB_CURRENCY"]))
 
     def test_generic_money_v1(self):
         """ Detection of money quantities """
@@ -429,19 +429,19 @@ class RegexTest(unittest.TestCase):
         ner = ner_regex.Regex_Ner()
         result = ner.regex_detection(test)
 
-        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
+        self.assertTrue("PROB_CURRENCY" in result, "{} MONEY was not detected {}".format(
             self.shortDescription(),
             result))
 
         # search for the rule CP_MONEY_V0
-        for i in range(len(result["MONEY"])):
-            if result["MONEY"][i][1] == "CP_MONEY_V0":
+        for i in range(len(result["PROB_CURRENCY"])):
+            if result["PROB_CURRENCY"][i][1] == "CP_MONEY_V0":
                 idx = i
 
-        self.assertEqual(result["MONEY"][idx][0], "1.000,000",
+        self.assertEqual(result["PROB_CURRENCY"][idx][0], "1.000,000",
                          "{} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
-                             result["MONEY"]))
+                             result["PROB_CURRENCY"]))
 
     def test_generic_money_v2(self):
         """ Detection of money quantities """
@@ -451,20 +451,20 @@ class RegexTest(unittest.TestCase):
         ner = ner_regex.Regex_Ner()
         result = ner.regex_detection(test)
 
-        self.assertTrue("MONEY" in result,
-                        "{} MONEY was not detected {}".format(
+        self.assertTrue("PROB_CURRENCY" in result,
+                        "{} PROB_CURRENCY was not detected {}".format(
                             self.shortDescription(),
                             result))
 
         # search for the rule CP_MONEY_V0
-        for i in range(len(result["MONEY"])):
-            if result["MONEY"][i][1] == "CP_MONEY_V0":
+        for i in range(len(result["PROB_CURRENCY"])):
+            if result["PROB_CURRENCY"][i][1] == "CP_MONEY_V0":
                 idx = i
 
-        self.assertEqual(result["MONEY"][idx][0], "1.000,000,52",
+        self.assertEqual(result["PROB_CURRENCY"][idx][0], "1.000,000,52",
                          "{} wrong currency detected. Detected {}".format(
                              self.shortDescription(),
-                             result["MONEY"]))
+                             result["PROB_CURRENCY"]))
         
     def test_generic_money_v3(self):
         """ Detection of money quantities """
@@ -474,8 +474,8 @@ class RegexTest(unittest.TestCase):
         ner = ner_regex.Regex_Ner()
         result = ner.regex_detection(test)
 
-        self.assertTrue("MONEY" not in result,
-                        "{} MONEY not detected {}".format(
+        self.assertTrue("PROB_CURRENCY" not in result,
+                        "{} PROB_CURRENCY not detected {}".format(
                             self.shortDescription(),
                             result))
         
@@ -487,21 +487,21 @@ class RegexTest(unittest.TestCase):
         ner = ner_regex.Regex_Ner()
         result = ner.regex_detection(test)
 
-        self.assertTrue("MONEY" in result,
-                        "{} MONEY was not detected {}".format(
+        self.assertTrue("PROB_CURRENCY" in result,
+                        "{} PROB_CURRENCY was not detected {}".format(
                             self.shortDescription(),
                             result))
 
         idx = -1
         # search for the rule CP_MONEY_V0
-        for i in range(len(result["MONEY"])):
-            if result["MONEY"][i][1] == "CP_MONEY_V1":
+        for i in range(len(result["PROB_CURRENCY"])):
+            if result["PROB_CURRENCY"][i][1] == "CP_MONEY_V1":
                 idx = i
 
         self.assertEqual(idx, -1,
                          "{} Wrong quantity detected. Detected {}".format(
                              self.shortDescription(),
-                             result["MONEY"]))
+                             result["PROB_CURRENCY"]))
             
     def test_money_CP_EURO_V0(self):
         """ Detection of euro currency """

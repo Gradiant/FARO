@@ -51,9 +51,9 @@ DICT_REGEX = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
                   #"CP_MOBILE_PHONE_NUMBER_V0"),
                   (CP_MOBILE_PHONE_NUMBER_APPROX_V0,
                    "CP_MOBILE_PHONE_NUMBER_APPROX_V0")],
-              "MONEY": [(CP_MONEY_V0, "CP_MONEY_V0"),
-                        (CP_MONEY_V1, "CP_MONEY_V1"),
-                        (CP_EURO_V0, "CP_EURO_V0")],
+              "MONEY": [(CP_EURO_V0, "CP_EURO_V0")],
+              "PROB_CURRENCY": [(CP_MONEY_V0, "CP_MONEY_V0"),
+                                (CP_MONEY_V1, "CP_MONEY_V1")],
               "SIGNATURE": [(CP_FIRMA_V0, "CP_FIRMA_V0")]}
 
 

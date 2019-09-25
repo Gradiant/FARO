@@ -7,12 +7,12 @@ logfilter_entity_list:
     - PER_PROF_ORG
     - SIGNATURE
     - CUSTOM
+    - PROB_CURRENCY
 
 sensitivity_list:
     - low
     - medium
     - high
-
 
 sensitivity_multiple_kpis: 3
 
@@ -41,6 +41,7 @@ ent_keys_dump:
     PHONE: phone_number
     SIGNATURE: signature
     CUSTOM: custom_words
+    PROB_CURRENCY: prob_currency
 
 custom_word_list:
    - total
