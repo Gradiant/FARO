@@ -318,12 +318,20 @@ sensitivity:
 
 * sensitivity_multiple_kpis this number indicates the simultaneous number of scores in a level allowed before leveling up the sensitivy score
 
-* sensitivity is a dict with the sensitivity conditions that must be satisified in order to reach a sensitivity level.
+* sensitivity is a dict with the sensitivity conditions that must be satisfied in order to reach a sensitivity level.
 
 
 ### Input Formats <a name="inputformats"></a>
 
 The FARO application uses Tika for document processing. Therefore all the formats that Tika process can be used as input. Nevertheless, the faro_spider.sh/faro_spider.bat scripts for bulk processing are restricted to the following extensions: .doc, .docx, .pptx, .ppt, .xls, .pdf, .odt, .ods, .odp, .txt and .rtf.
+
+### Running Tests <a name="runningtests"></a>
+
+FARO has several tests to verify the functionality of the system (currently the tests only cover the regular expressions). Tests can be executed with the following command:
+
+```
+python test_suite.py
+```
 
 ### Techniques <a name="techniques"></a>
 
