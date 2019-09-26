@@ -14,6 +14,7 @@ from faro.sensitivity_score import Sensitivity_Scorer
 from joblib import load
 from .io_parser import parse_file
 from .utils import preprocess_text
+from .docprofiler import Doc_Profiler
 
 # init the seeed of the lang detection algorithm
 DetectorFactory.seed = 0
@@ -150,9 +151,20 @@ def faro_execute(params):
     config = {**config, **commons_config}
 
     my_detector = init_detector(config)
+    tabula_profiler = Doc_Profiler(config)
 
     logger.info("Analysing {}".format(params.input_file))
     accepted_entity_dict = my_detector.analyse(file_lines)
+
+    # check numbers inside tables
+    #if "MONEY" in accepted_entity_dict:
+    #    logger.info("ACCEPTED {}".format(accepted_entity_dict["MONEY"]))
+    
+    tabula_profiler.validate_currency(input_file, content_type,
+                                      accepted_entity_dict, "PROB_CURRENCY")
+
+    #if "MONEY" in accepted_entity_dict:
+    #    logger.info("ACCEPTED {}".format(accepted_entity_dict["MONEY"]))
 
     # TODO: translate dictionary keys to build a coherent tool
     with io.open(output_entity_file, "a+") as f_out:

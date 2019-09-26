@@ -17,3 +17,4 @@ luhn==0.2.0
 python-stdnum==1.11
 joblib==0.13.2
 regex==2019.8.19
+tabula-py==1.4.1

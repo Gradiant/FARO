@@ -52,6 +52,16 @@ custom_word_list:
    - importe
    - factura
 
+profiler_list:
+  - total
+  - importe
+  - precio
+  - factura
+  - euro
+  - €
+  - iva
+  - impuesto
+
 sensitivity:
     low: 
         person_position_organization:
