@@ -57,6 +57,8 @@ class Doc_Profiler(object):
                             unverified_quant_list.append(key)
                         else:
                             del probcurrency_dict[key]
+                    else:
+                        unverified_quant_list.append(key)
 
                 if len(unverified_quant_list) > 0:
                     consolidated_dict = self.process_input(
