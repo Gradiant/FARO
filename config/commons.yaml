@@ -25,6 +25,7 @@ sensitivity_keys_dump:
     - financial_data
     - document_id
     - custom_words
+    - prob_currency
 
 
 ent_keys_dump:

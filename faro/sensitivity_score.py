@@ -20,6 +20,9 @@ class Sensitivity_Scorer(object):
         current_idx = 0
 
         for key in summary_dict:
+            if key not in self.ranking_dict:
+                continue
+            
             while (self.ranking_dict[self.sensitivity_list[
                     current_idx]][key]["max"] <= summary_dict[key]):
                 current_idx += 1
@@ -37,8 +40,8 @@ class Sensitivity_Scorer(object):
             above_min = 0
 
             for key in summary_dict:
-                if summary_dict[key] >= self.ranking_dict[
-                        self.sensitivity_list[current_idx]][key]["min"]:
+                if (key in self.ranking_dict and summary_dict[key] >=
+                    self.ranking_dict[self.sensitivity_list[current_idx]][key]["min"]):
                     above_min += 1
 
             if (above_min > self.sensitivity_multiple_kpis and
@@ -109,6 +112,12 @@ class Sensitivity_Scorer(object):
                     result_dict["custom_words"] = 0
 
                 result_dict["custom_words"] = len(entity_dict[key])
+
+            elif key == "PROB_CURRENCY":
+                if "prob_currency" not in result_dict:
+                    result_dict["prob_currency"] = 0
+
+                result_dict["prob_currency"] = len(entity_dict[key])
                     
         score = self._get_ranking(result_dict)
 

@@ -48,10 +48,15 @@ class Doc_Profiler(object):
                 unverified_quant_list = []
 
                 # build the list of unverified currency
-                for key in probcurrency_dict.keys():
+                currency_key_list = [_key for _key in probcurrency_dict.keys()]
+                
+                for key in currency_key_list:
                     # add only if not already verified
-                    if money_dict is not None and key not in money_dict:
-                        unverified_quant_list.append(key)
+                    if money_dict is not None:
+                        if key not in money_dict:
+                            unverified_quant_list.append(key)
+                        else:
+                            del probcurrency_dict[key]
 
                 if len(unverified_quant_list) > 0:
                     consolidated_dict = self.process_input(
@@ -86,10 +91,7 @@ class Doc_Profiler(object):
         input_file -- a string containing the path to a pdf file
         quantity_list -- a list with quantity numbers extracted from the text
 
-        """
-
-        print ("Quantity list ", quantity_list)
-        
+        """        
         # build a dict with quantity list and detections
         consolidated_dict = OrderedDict()
         for quantity_key in quantity_list:
