@@ -63,7 +63,7 @@ class Doc_Profiler(object):
                 if len(unverified_quant_list) > 0:
                     consolidated_dict = self.process_input(
                         input_file, unverified_quant_list)
-                    
+
                     for key in consolidated_dict:
                         if consolidated_dict[key]:
                             if "MONEY" not in entity_dict:
@@ -93,7 +93,7 @@ class Doc_Profiler(object):
         input_file -- a string containing the path to a pdf file
         quantity_list -- a list with quantity numbers extracted from the text
 
-        """        
+        """
         # build a dict with quantity list and detections
         consolidated_dict = OrderedDict()
         for quantity_key in quantity_list:
@@ -109,8 +109,6 @@ class Doc_Profiler(object):
 
             unique_values_df = np.unique(
                 df_table.to_numpy(dtype="str")).tolist()
-            
-            # logger.info("UNIQUE VALUES {}".format(np.unique(df_table.to_numpy(dtype="str")).tolist()))
             
             if self.has_keywords(unique_values_df):
                 for value in unique_values_df:
