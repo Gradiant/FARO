@@ -34,6 +34,9 @@ class Detector(object):
     def _get_kpis(self, sent_list):
         """ Extract KPIs from document """
 
+        # full_text is used for proximity detection
+        full_text = "\n".join(sent_list)
+        
         total_ent_list = []
 
         # Flag to indicate that a sign entity is expected (if True)
@@ -57,7 +60,8 @@ class Detector(object):
                     total_ent_list.append(new_ent)
 
             # extract entities (Regex)
-            ent_list_regex = self.regex_ner.regex_detection(sent)
+            ent_list_regex = self.regex_ner.regex_detection(
+                sent, full_text, offset)
 
             for ent_key in ent_list_regex.keys():
                 for ent in ent_list_regex[ent_key]:
@@ -195,7 +199,7 @@ class Detector(object):
         return unique_ent_dict
 
     def __init__(self, nlp, crf_list, email_detector, crf_ner_classic,
-                 corp_mail_list, custom_word_list):
+                 corp_mail_list, custom_word_list, regexp_config_dict):
         """ Intialization
 
         Keyword Arguments:
@@ -205,6 +209,7 @@ class Detector(object):
         crf_ner_classic -- list of crfs for classic ner detection
         corp_mail_list -- list with typical corporative names
         custom_word_list -- list with custom words
+        regexp_config_dict -- configuration of the proximity detections
 
         """
 
@@ -215,6 +220,6 @@ class Detector(object):
 
         self.custom_detector = Custom_Word_Detector(nlp, custom_word_list)
 
-        self.regex_ner = Regex_Ner()
+        self.regex_ner = Regex_Ner(regexp_config_dict=regexp_config_dict)
         self.corp_email_class = Corporative_Detection(
             email_detector, corp_mail_list)

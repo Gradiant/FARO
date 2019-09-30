@@ -58,6 +58,20 @@ def init_detector(config):
 
     if "custom_word_list" in config:
         custom_word_list = config["custom_word_list"]
+
+    # configuration of the proximity regexp
+    regexp_config_dict = OrderedDict()
+    if "proximity_regexp_config" in config:
+        for key in config["proximity_regexp_config"]:
+            regexp_config_dict[key] = OrderedDict()
+            regexp_config_dict[key]["span_len"] = int(
+                config["proximity_regexp_config"][key]["span_len"])
+
+            with open(config[
+                    "proximity_regexp_config"][key]["word_file"], "r") as f_in:
+                word_list = [line.rstrip("\n").strip() for line in f_in]
+            
+            regexp_config_dict[key]["word_list"] = word_list
         
     my_detector = Detector(nlp,
                            crf_model_list,
@@ -65,7 +79,8 @@ def init_detector(config):
                                "detection"]["personal_email_detection"]),
                            crf_ner_classic,
                            corp_mail_list=corp_mail_list,
-                           custom_word_list=custom_word_list)
+                           custom_word_list=custom_word_list,
+                           regexp_config_dict=regexp_config_dict)
 
     return my_detector
 

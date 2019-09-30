@@ -38,46 +38,58 @@ class RegexTest(unittest.TestCase):
 
         test = "Mi teléfono es 988 888 888 "
         ner = ner_regex.Regex_Ner()
-        
-        result = ner.regex_detection(test)
 
+        result = ner._detect_regexp(test, "strict")
+        
         self.assertTrue("PHONE" in result,
                         "{} Phone was not detected {}".format(
                             self.shortDescription(),
                             result))
 
-        self.assertEqual(clean_text(result["PHONE"][0][0].strip()),
+        idx = -1
+        for i, _regexp in enumerate(result["PHONE"]):
+            if _regexp[1] == "CP_PHONE_NUMBER_APPROX_V3":
+                idx = i
+                break
+            
+        self.assertEqual(clean_text(result["PHONE"][idx][0].strip()),
                          "988888888",
                          "{} phone was not detected. Extracted {}".format(
                              self.shortDescription(),
-                             result["PHONE"][0]))
+                             result["PHONE"][idx]))
 
     def test_1_CP_PHONE_NUMBER_V0(self):
         """ Test the detection of a phone number """
 
         test = "Mi teléfono es +34 988 888 888 "
         ner = ner_regex.Regex_Ner()
-        
-        result = ner.regex_detection(test)
 
+        result = ner._detect_regexp(test, "strict")
+        
         self.assertTrue("PHONE" in result,
                         "{} Phone was not detected {}".format(
                             self.shortDescription(),
                             result))
 
-        self.assertEqual(clean_text(result["PHONE"][0][0].strip()),
+        idx = -1
+        for i, _regexp in enumerate(result["PHONE"]):
+            if _regexp[1] == "CP_PHONE_NUMBER_APPROX_V3":
+                idx = i
+                break
+        
+        self.assertEqual(clean_text(result["PHONE"][idx][0].strip()),
                          "34988888888",
                          "{} phone was not detected. Extracted {}".format(
                              self.shortDescription(),
-                             result["PHONE"][0]))
+                             result["PHONE"][idx]))
 
     def test_2_CP_PHONE_NUMBER_V0(self):
         """ Test the detection of a wrong phone number """
 
         test = "Mi teléfono es +34 988 888 888 456"
         ner = ner_regex.Regex_Ner()
-        
-        result = ner.regex_detection(test)
+
+        result = ner._detect_regexp(test, "strict")
 
         self.assertTrue("PHONE" not in result,
                         "{} Phone was detected {}".format(
@@ -89,9 +101,9 @@ class RegexTest(unittest.TestCase):
 
         test = "Mi teléfono es 45 988 888 888"
         ner = ner_regex.Regex_Ner()
-        
-        result = ner.regex_detection(test)
 
+        result = ner._detect_regexp(test, "strict")
+        
         self.assertTrue("PHONE" not in result,
                         "{} Phone was detected {}".format(
                             self.shortDescription(),
@@ -102,29 +114,32 @@ class RegexTest(unittest.TestCase):
 
         test = "Mi teléfono móvil es 688 888 888 "
         ner = ner_regex.Regex_Ner()
-        
-        result = ner.regex_detection(test)
+
+        result = ner._detect_regexp(test, "strict")
 
         self.assertTrue("MOBILE" in result,
                         "{} Mobile phone was not detected {}".format(
                             self.shortDescription(),
                             result))
 
-        self.assertEqual(result["MOBILE"][0][0].strip(),
-                         "688 888 888",
+        for i, _regexp in enumerate(result["MOBILE"]):
+            if _regexp[1] == "CP_MOBILE_PHONE_NUMBER_APPROX_V0":
+                idx = i
+                break
+
+        self.assertEqual(clean_text(result["MOBILE"][idx][0].strip()),
+                         "688888888",
                          "{} Mobile phone was not detected. Extracted {}".format(
                              self.shortDescription(),
-                             result["MOBILE"][0]))
+                             result["MOBILE"][idx]))
 
     def test_1_CP_MOBILE_NUMBER_V0(self):
         """ Test the detection of a mobile phone number """
 
         test = "Mi teléfono es 45 688 888 888 "
         ner = ner_regex.Regex_Ner()
-        
-        result = ner.regex_detection(test)
 
-        print ("xxxxxxxxxxxxxxxxxxxxx RESULT xxxxxxxxxxxxx ", result)
+        result = ner._detect_regexp(test, "strict")
         
         self.assertTrue("MOBILE" not in result,
                         "{} Mobile phone was detected {}".format(
@@ -136,10 +151,8 @@ class RegexTest(unittest.TestCase):
 
         test = "Mi teléfono es 45688 888 888 "
         ner = ner_regex.Regex_Ner()
-        
-        result = ner.regex_detection(test)
 
-        print ("xxxxxxxxxxxxxxxxxxxxx RESULT xxxxxxxxxxxxx ", result)
+        result = ner._detect_regexp(test, "strict")
         
         self.assertTrue("MOBILE" not in result,
                         "{} Mobile phone was detected {}".format(
@@ -152,24 +165,34 @@ class RegexTest(unittest.TestCase):
         test = "This is the IBAN of the account ES91 2100 0418 4502 0005 1332 ."
         ner = ner_regex.Regex_Ner()
 
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
         self.assertTrue("FinancialData" in result,
                         "{} IBAN was not detected {}".format(
                             self.shortDescription(),
                             result))
 
-        self.assertEqual(result["FinancialData"][0][0],
-                         "ES91 2100 0418 4502 0005 1332",
+        idx = -1
+        for i, _regexp in enumerate(result["FinancialData"]):
+            if _regexp[1] == "CP_IBAN_V1":
+                idx = i
+                break
+
+        self.assertEqual(clean_text(result["FinancialData"][idx][0]),
+                         "ES9121000418450200051332",
                          "{} wrong IBAN detected. Detected {}".format(
                              self.shortDescription(),
-                             result["FinancialData"][0]))
+                             result["FinancialData"][idx]))
 
     def test_iban_CP_IBAN_APPROX_V1(self):
         """ Test the detection of the IBAN account """
 
         test = "This is the IBAN of the account ES91 2100 xx34 ."
-        ner = ner_regex.Regex_Ner()
+
+        proximity_dict = {"FinancialData": {"span_len": 50,
+                                            "word_list": "IBAN"}}
+        
+        ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
 
         result = ner.regex_detection(test)
 
@@ -178,11 +201,17 @@ class RegexTest(unittest.TestCase):
                             self.shortDescription(),
                             result))
 
-        self.assertEqual(result["FinancialData"][0][0],
+        idx = -1
+        for i, _regexp in enumerate(result["FinancialData"]):
+            if _regexp[1] == "CP_IBAN_APPROX_V0":
+                idx = i
+                break
+
+        self.assertEqual(result["FinancialData"][idx][0],
                          "ES91 2100 xx34",
                          "{} wrong IBAN detected. Detected {}".format(
                              self.shortDescription(),
-                             result["FinancialData"][0]))
+                             result["FinancialData"][idx]))
         
     def test_is_not_iban_CP_IBAN_V0(self):
         """ Test IBAN is not detected """
@@ -190,10 +219,10 @@ class RegexTest(unittest.TestCase):
         test = "This is the IBAN of the account ES91 2100 0418 4502 0005 1332 4576 ."
         ner = ner_regex.Regex_Ner()
 
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
         self.assertTrue("FinancialData" not in result,
-                        "{} IBAN was detected but it should not{}".format(
+                        "{} IBAN was detected but it should not {}".format(
                             self.shortDescription(),
                             result))
         
@@ -202,16 +231,23 @@ class RegexTest(unittest.TestCase):
 
         test = "the email of John is deadbeaf@foo.bar"
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
-
+        result = ner._detect_regexp(test, "strict")
+        
         self.assertTrue("Email" in result,
                         "{} email was not detected {}".format(
                             self.shortDescription(),
                             result))
-        self.assertEqual(result["Email"][0][0], "deadbeaf@foo.bar",
+        
+        idx = -1
+        for i, _regexp in enumerate(result["Email"]):
+            if _regexp[1] == "CP_EMAIL_ADDRESS_V0":
+                idx = i
+                break
+        
+        self.assertEqual(result["Email"][idx][0], "deadbeaf@foo.bar",
                          "{} wrong email detected. Detected {}".format(
                              self.shortDescription(),
-                             result["Email"][0]))
+                             result["Email"][idx]))
         
     def test_card_CP_CREDIT_CARD_V0(self):
         """ Detection of card v0 rule """
@@ -219,19 +255,23 @@ class RegexTest(unittest.TestCase):
         test = "the visa card is 4111111111111111."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-#        print ("Result ", result)
-        
         self.assertTrue("CreditCard" in result,
                         "{} credit card was not detected {}".format(
                             self.shortDescription(),
                             result))
 
-        self.assertEqual(result["CreditCard"][0][0], "4111111111111111",
+        idx = -1
+        for i, _regexp in enumerate(result["CreditCard"]):
+            if _regexp[1] == "CP_CREDIT_CARD_V0":
+                idx = i
+                break
+
+        self.assertEqual(result["CreditCard"][idx][0], "4111111111111111",
                          " {} wrong credit card detected. Detected {}".format(
                              self.shortDescription(),
-                             result["CreditCard"][0]))
+                             result["CreditCard"][idx]))
 
     def test_card_CP_DNI_V0(self):
         """ Detection of DNI v0 rule """
@@ -239,17 +279,23 @@ class RegexTest(unittest.TestCase):
         test = "el dni de Juan es 66666666Y."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
         
         self.assertTrue("DNI_SPAIN" in result,
                         "{} DNI_SPAIN was not detected {}".format(
                             self.shortDescription(),
                             result))
 
-        self.assertEqual(clean_text(result["DNI_SPAIN"][0][0]), "66666666Y",
+        idx = -1
+        for i, _regexp in enumerate(result["DNI_SPAIN"]):
+            if _regexp[1] == "CP_DNI_V0":
+                idx = i
+                break
+        
+        self.assertEqual(clean_text(result["DNI_SPAIN"][idx][0]), "66666666Y",
                          " {} wrong dni detected. Detected {}".format(
                              self.shortDescription(),
-                             result["DNI_SPAIN"][0]))
+                             result["DNI_SPAIN"][idx]))
 
     def test_card_CP_DNI_V0_with_dash(self):
         """ Detection of DNI v0 rule with letter separated by dash """
@@ -257,16 +303,23 @@ class RegexTest(unittest.TestCase):
         test = "el dni de Juan es 66666666-Y."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("DNI_SPAIN" in result, "{} DNI_SPAIN was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("DNI_SPAIN" in result,
+                        "{} DNI_SPAIN was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
-        self.assertEqual(clean_text(result["DNI_SPAIN"][0][0]), "66666666Y",
+        idx = -1
+        for i, _regexp in enumerate(result["DNI_SPAIN"]):
+            if _regexp[1] == "CP_DNI_V0":
+                idx = i
+                break
+        
+        self.assertEqual(clean_text(result["DNI_SPAIN"][idx][0]), "66666666Y",
                          " {} wrong dni detected. Detected {}".format(
                              self.shortDescription(),
-                             result["DNI_SPAIN"][0]))
+                             result["DNI_SPAIN"][idx]))
         
     def test_card_CP_NI_UK_V0(self):
         """ Detection of NI v0 rule """
@@ -274,16 +327,23 @@ class RegexTest(unittest.TestCase):
         test = "el ni de Juan es JG103759A."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
         
-        self.assertTrue("NI_UK" in result, "{} NI_UK was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("NI_UK" in result,
+                        "{} NI_UK was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
-        self.assertEqual(result["NI_UK"][0][0], "JG103759A",
+        idx = -1
+        for i, _regexp in enumerate(result["NI_UK"]):
+            if _regexp[1] == "CP_NI_UK_V0":
+                idx = i
+                break
+
+        self.assertEqual(clean_text(result["NI_UK"][idx][0]), "JG103759A",
                          " {} wrong ni detected. Detected {}".format(
                              self.shortDescription(),
-                             result["NI_UK"][0]))
+                             result["NI_UK"][idx]))
 
     def test_card_CP_DNI_V0_with_v2(self):
         """ Detection of DNI v0 rule with Nº stuck to the number """
@@ -291,108 +351,153 @@ class RegexTest(unittest.TestCase):
         test = "el N.I.F. Nº15373458B."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
-
-        self.assertTrue("DNI_SPAIN" in result, "{} DNI_SPAIN was not detected {}".format(
-            self.shortDescription(),
-            result))
-
-        self.assertEqual(clean_text(result["DNI_SPAIN"][0][0]), "15373458B",
-                         " {} wrong dni detected. Detected {}".format(
-                             self.shortDescription(),
-                             result["DNI_SPAIN"][0]))
+        result = ner._detect_regexp(test, "strict")
         
-    def test_card_CP_PHONE_NUMBER_V0(self):
+        self.assertTrue("DNI_SPAIN" in result,
+                        "{} DNI_SPAIN was not detected {}".format(
+                            self.shortDescription(),
+                            result))
+        
+        idx = -1
+        for i, _regexp in enumerate(result["DNI_SPAIN"]):
+            if _regexp[1] == "CP_DNI_V0":
+                idx = i
+                break
+            
+        self.assertEqual(clean_text(result["DNI_SPAIN"][idx][0]), "15373458B",
+                         "{} wrong dni detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["DNI_SPAIN"][idx]))
+        
+    def test_broad_CP_PHONE_NUMBER_V0(self):
         """ Detection of phone number """
 
         test = "el teléfono de Juan es +34 986 000000"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "broad")
         
-        self.assertTrue("PHONE" in result, "{} PHONE was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("PHONE" in result,
+                        "{} PHONE was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
-        self.assertEqual(clean_text(result["PHONE"][0][0]), "34986000000",
+        idx = -1
+        for i, _regexp in enumerate(result["PHONE"]):
+            if _regexp[1] == "CP_PHONE_NUMBER_GEN_V3":
+                idx = i
+                break
+
+        self.assertEqual(clean_text(result["PHONE"][idx][0]), "34986000000",
                          " {} wrong phone detected. Detected {}".format(
                              self.shortDescription(),
-                             result["PHONE"][0]))
+                             result["PHONE"][idx]))
 
-    def test_card_CP_PHONE_NUMBER_APPROX_V0(self):
+    def test_broad_CP_PHONE_NUMBER_APPROX_V0(self):
         """ Detection of phone number """
 
         test = "tfno.: ESP 98000000"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "broad")
         
-        self.assertTrue("PHONE" in result, "{} PHONE was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("PHONE" in result,
+                        "{} PHONE was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
-        self.assertEqual(clean_text(result["PHONE"][0][0]), "98000000",
+        idx = -1
+        for i, _regexp in enumerate(result["PHONE"]):
+            if _regexp[1] == "CP_PHONE_NUMBER_GEN_V3":
+                idx = i
+                break
+        
+        self.assertEqual(clean_text(result["PHONE"][idx][0]), "98000000",
                          " {} wrong phone detected. Detected {}".format(
                              self.shortDescription(),
-                             result["PHONE"][0]))
+                             result["PHONE"][idx]))
 
-    def test_card_CP_PHONE_NUMBER_APPROX_V1(self):
+    def test_broad_CP_PHONE_NUMBER_APPROX_V1(self):
         """ Detection of phone number """
 
         test = "teléfono: ESP 98000000"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "broad")
         
-        self.assertTrue("PHONE" in result, "{} PHONE was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("PHONE" in result,
+                        "{} PHONE was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
-        self.assertEqual(clean_text(result["PHONE"][0][0]), "98000000",
+        idx = -1
+        for i, _regexp in enumerate(result["PHONE"]):
+            if _regexp[1] == "CP_PHONE_NUMBER_GEN_V3":
+                idx = i
+                break
+
+        self.assertEqual(clean_text(result["PHONE"][idx][0]), "98000000",
                          " {} wrong phone detected. Detected {}".format(
                              self.shortDescription(),
-                             result["PHONE"][0]))
+                             result["PHONE"][idx]))
 
-    def test_card_CP_PHONE_NUMBER_APPROX_V2(self):
+    def test_complete_phone_number(self):
         """ Detection of phone number """
 
         test = "tel.: ESP 98000000"
 
-        ner = ner_regex.Regex_Ner()
+        proximity_dict = {"PHONE": {
+            "span_len": 50,
+            "word_list": "tel."}}
+        
+        ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         result = ner.regex_detection(test)
         
-        self.assertTrue("PHONE" in result, "{} PHONE was not detected {}".format(
-            self.shortDescription(),
-            result))
-
+        self.assertTrue("PHONE" in result,
+                        "{} PHONE was not detected {}".format(
+                            self.shortDescription(),
+                            result))
+        
         self.assertEqual(clean_text(result["PHONE"][0][0]), "98000000",
                          " {} wrong phone detected. Detected {}".format(
                              self.shortDescription(),
                              result["PHONE"][0]))
         
-    def test_card_CP_PHONE_NUMBER_APPROX_V3(self):
+    def test_complete_phone_number_v1(self):
         """ Detection of phone number """
 
         test = "fax: ESP 98000000"
 
-        ner = ner_regex.Regex_Ner()
+        proximity_dict = {"PHONE": {
+            "span_len": 50,
+            "word_list": "tel."}}
+        
+        ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
+        
         result = ner.regex_detection(test)
         
-        self.assertTrue("PHONE" not in result, "{} PHONE was detected but it shouldn't{}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("PHONE" not in result,
+                        "{} PHONE was detected but it shouldn't{}".format(
+                            self.shortDescription(),
+                            result))
 
-    def test_card_CP_MOBILE_NUMBER_APPROX_V0(self):
+    def test_complete_mobile_v0(self):
         """ Detection of phone number """
 
         test = "móvil: ESP 98000000"
 
-        ner = ner_regex.Regex_Ner()
+        proximity_dict = {"MOBILE": {
+            "span_len": 50,
+            "word_list": "móvil"}}
+
+        ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
+        
         result = ner.regex_detection(test)
         
-        self.assertTrue("MOBILE" in result, "{} Mobile phone was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("MOBILE" in result,
+                        "{} Mobile phone was not detected {}".format(
+                            self.shortDescription(),
+                            result))
         
         self.assertEqual(clean_text(result["MOBILE"][0][0]), "98000000",
                          " {} wrong mobile detected. Detected {}".format(
@@ -405,11 +510,12 @@ class RegexTest(unittest.TestCase):
         test = "el total de la factura es 1,000."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("PROB_CURRENCY" in result, "{} MONEY was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("PROB_CURRENCY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search for the rule CP_MONEY_V1
         for i in range(len(result["PROB_CURRENCY"])):
@@ -427,11 +533,12 @@ class RegexTest(unittest.TestCase):
         test = "el total de la factura es 1.000,000."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("PROB_CURRENCY" in result, "{} MONEY was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("PROB_CURRENCY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search for the rule CP_MONEY_V0
         for i in range(len(result["PROB_CURRENCY"])):
@@ -449,7 +556,7 @@ class RegexTest(unittest.TestCase):
         test = "el total de la factura es 1.000,000,52."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
         self.assertTrue("PROB_CURRENCY" in result,
                         "{} PROB_CURRENCY was not detected {}".format(
@@ -472,7 +579,7 @@ class RegexTest(unittest.TestCase):
         test = "el total de la factura es C42.333.333"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
         self.assertTrue("PROB_CURRENCY" not in result,
                         "{} PROB_CURRENCY not detected {}".format(
@@ -485,7 +592,7 @@ class RegexTest(unittest.TestCase):
         test = "el total de la factura es 1.000,000,52."
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
         self.assertTrue("PROB_CURRENCY" in result,
                         "{} PROB_CURRENCY was not detected {}".format(
@@ -509,11 +616,12 @@ class RegexTest(unittest.TestCase):
         test = "este aparato cuesta 1,000€"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("MONEY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search where euro is rules matches the sentence
         for i in range(len(result["MONEY"])):
@@ -531,11 +639,12 @@ class RegexTest(unittest.TestCase):
         test = "este aparato cuesta 1,000 euros"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("MONEY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search where euro is rules matches the sentence
         for i in range(len(result["MONEY"])):
@@ -553,11 +662,12 @@ class RegexTest(unittest.TestCase):
         test = "este aparato cuesta 1000 euros"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("MONEY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search where euro is rules matches the sentence
         for i in range(len(result["MONEY"])):
@@ -575,11 +685,12 @@ class RegexTest(unittest.TestCase):
         test = "este aparato cuesta 1,000.00 euros"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("MONEY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search where euro is rules matches the sentence
         for i in range(len(result["MONEY"])):
@@ -597,11 +708,12 @@ class RegexTest(unittest.TestCase):
         test = "este aparato cuesta 1,000.00 Euros"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("MONEY" in result, "{} MONEY was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("MONEY" in result,
+                        "{} MONEY was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search where euro is rules matches the sentence
         for i in range(len(result["MONEY"])):
@@ -619,11 +731,12 @@ class RegexTest(unittest.TestCase):
         test = "El CIF de la compañía es A99151276"
 
         ner = ner_regex.Regex_Ner()
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "strict")
 
-        self.assertTrue("DNI_SPAIN" in result, "{} DNI_SPAIN was not detected {}".format(
-            self.shortDescription(),
-            result))
+        self.assertTrue("DNI_SPAIN" in result,
+                        "{} DNI_SPAIN was not detected {}".format(
+                            self.shortDescription(),
+                            result))
 
         # search where euro is rules matches the sentence
         for i in range(len(result["DNI_SPAIN"])):
@@ -644,8 +757,8 @@ class RegexTest(unittest.TestCase):
 
         HACK_REGEX = {"Email_Hack": [(CP_EMAIL_HACK_V0, "CP_EMAIL_HACK_V0")]}
         
-        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
-        result = ner.regex_detection(test)
+        ner = ner_regex.Regex_Ner(strict_regexp_dict=HACK_REGEX)
+        result = ner._detect_regexp(test, "strict")
 
         print ("EMAIL HACK ", result)
         self.assertTrue("Email_Hack" in result,
@@ -656,8 +769,8 @@ class RegexTest(unittest.TestCase):
 
         test = "Enviar todos vuestros datos a info AT hacktext DOT com"
 
-        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
-        result = ner.regex_detection(test)
+        ner = ner_regex.Regex_Ner(strict_regexp_dict=HACK_REGEX)
+        result = ner._detect_regexp(test, "strict")
         
         print ("EMAIL HACK ", result)
         self.assertTrue("Email_Hack" in result,
@@ -668,8 +781,8 @@ class RegexTest(unittest.TestCase):
 
         test = "Enviar todos vuestros datos a info (AT) hacktext (DOT) com"
 
-        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
-        result = ner.regex_detection(test)
+        ner = ner_regex.Regex_Ner(strict_regexp_dict=HACK_REGEX)
+        result = ner._detect_regexp(test, "strict")
 
         print ("EMAIL HACK ", result)
         self.assertTrue("Email_Hack" in result,
@@ -679,9 +792,9 @@ class RegexTest(unittest.TestCase):
                             test))
 
         test = "Enviar todos vuestros datos a info-AT-hacktext-DOT-com"
-
-        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
-        result = ner.regex_detection(test)
+        
+        ner = ner_regex.Regex_Ner(strict_regexp_dict=HACK_REGEX)
+        result = ner._detect_regexp(test, "strict")
 
         print ("EMAIL HACK ", result)
         self.assertTrue("Email_Hack" in result,
@@ -691,9 +804,9 @@ class RegexTest(unittest.TestCase):
                             test))
         
         test = "Enviar todos vuestros datos a info-at-hacktext-dot-com"
-                
-        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
-        result = ner.regex_detection(test)
+
+        ner = ner_regex.Regex_Ner(strict_regexp_dict=HACK_REGEX)
+        result = ner._detect_regexp(test, "strict")
 
         print ("EMAIL HACK ", result)
         self.assertTrue("Email_Hack" in result,
@@ -703,9 +816,9 @@ class RegexTest(unittest.TestCase):
                             test))
 
         test = "Enviar todos vuestros datos a at-dot"
-                
-        ner = ner_regex.Regex_Ner(dict_regex=HACK_REGEX)
-        result = ner.regex_detection(test)
+
+        ner = ner_regex.Regex_Ner(strict_regexp_dict=HACK_REGEX)
+        result = ner._detect_regexp(test, "strict")
 
         print ("EMAIL HACK ", result)
         self.assertTrue("Email_Hack" not in result,
@@ -713,5 +826,3 @@ class RegexTest(unittest.TestCase):
                             self.shortDescription(),
                             result,
                             test))
-
-        
