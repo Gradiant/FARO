@@ -135,6 +135,7 @@ class Regex_Ner(object):
                     span_start = idx_reg_start - span_len
                     span_end = idx_reg_end + span_len
 
+                    # safety check: span_start cannot be lower than 0 (beginning of file)
                     if span_start < 0:
                         span_start = 0
 
