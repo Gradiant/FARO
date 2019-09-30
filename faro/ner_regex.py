@@ -1,7 +1,10 @@
+import logging
 import copy
 import regex as re
 from collections import OrderedDict
 
+
+logger = logging.getLogger(__name__)
 
 CP_EMAIL_ADDRESS_V0 = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 
@@ -13,7 +16,8 @@ CP_CREDIT_CARD_GEN_V0 = (r"([0-9]{13}(?:[0-9]{3})?)|([0-9]{4}\s[0-9]{4}\s[0-9]{4
 CP_IBAN_V0 = r"\b[A-Z]{2}[0-9]{2}(?:\s+?[0-9]{4}){5}(?!(?:\s+?[0-9]){3})(?:\s+?[0-9]{1,2})?\b"
 
 CP_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}\b"
-CP_IBAN_APPROX_V0 = r"(?i)\biban.*?\K[A-Z][A-Z]([0-9].{0,3}){4,}\b"
+CP_IBAN_APPROX_V0 = r"\b(?i)iban.*?\K[A-Z][A-Z]([0-9].{0,3}){4,}\b"
+CP_IBAN_APPROX_V1 = r"(ES)([0-9].{0,3}){4,}"
 
 CP_DNI_V0 = r"(\b|[\(]|\bnº|\bNº)[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z](\b|[\)\.\],:])"
 CP_CIF_V0 = r"(\b|[\(]|\bnº|\bNº)[A-Za-z][\-\.\s]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\b|[\)\.\],:])"
@@ -64,7 +68,7 @@ DICT_REGEX_STRICT = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
 
 DICT_REGEX_BROAD = {"CreditCard": [(CP_CREDIT_CARD_GEN_V1,
                                     "CP_CREDIT_CARD_GEN_V1")],
-                    "FinancialData": [(CP_IBAN_APPROX_V0, "CP_IBAN_APPROX_V0")],
+                    "FinancialData": [(CP_IBAN_APPROX_V1, "CP_IBAN_APPROX_V1")],
                     "DNI_SPAIN": [(CP_DNI_GEN_V0, "CP_DNI_GEN_V0"),
                                   (CP_CIF_GEN_V0, "CP_CIF_GEN_V0"),
                     ],
@@ -131,6 +135,9 @@ class Regex_Ner(object):
                     span_start = idx_reg_start - span_len
                     span_end = idx_reg_end + span_len
 
+                    if span_start < 0:
+                        span_start = 0
+
                     span_text = full_text[span_start:span_end]
 
                     match_found = False
@@ -166,16 +173,18 @@ class Regex_Ner(object):
         result_dict = copy.deepcopy(result_strict_dict)
         
         for key in result_broad_dict:
+            consolidated_list = []
+            
             if key in result_dict:
                 # get the consolidated regexp
                 consolidated_list = [regexp[0] for regexp in result_dict[key]]
 
-                for _broad_regexp in result_broad_dict[key]:
-                    if _broad_regexp[0] not in consolidated_list:
-                        if key not in unconsolidated_dict:
-                            unconsolidated_dict[key] = []
+            for _broad_regexp in result_broad_dict[key]:
+                if _broad_regexp[0] not in consolidated_list:
+                    if key not in unconsolidated_dict:
+                        unconsolidated_dict[key] = []
 
-                        unconsolidated_dict[key].append(_broad_regexp)
+                    unconsolidated_dict[key].append(_broad_regexp)
 
         # check proximity conditions of broad regexp detections
         self._check_proximity_conditions(unconsolidated_dict,

@@ -184,7 +184,7 @@ class RegexTest(unittest.TestCase):
                              self.shortDescription(),
                              result["FinancialData"][idx]))
 
-    def test_iban_CP_IBAN_APPROX_V1(self):
+    def test_broad_iban_CP_IBAN_APPROX_V1(self):
         """ Test the detection of the IBAN account """
 
         test = "This is the IBAN of the account ES91 2100 xx34 ."
@@ -193,8 +193,7 @@ class RegexTest(unittest.TestCase):
                                             "word_list": "IBAN"}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
-
-        result = ner.regex_detection(test)
+        result = ner._detect_regexp(test, "broad")
 
         self.assertTrue("FinancialData" in result,
                         "{} IBAN was not detected {}".format(
@@ -203,12 +202,40 @@ class RegexTest(unittest.TestCase):
 
         idx = -1
         for i, _regexp in enumerate(result["FinancialData"]):
-            if _regexp[1] == "CP_IBAN_APPROX_V0":
+            if _regexp[1] == "CP_IBAN_APPROX_V1":
                 idx = i
                 break
 
-        self.assertEqual(result["FinancialData"][idx][0],
-                         "ES91 2100 xx34",
+        self.assertEqual(clean_text(result["FinancialData"][idx][0]),
+                         "ES912100xx34",
+                         "{} wrong IBAN detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["FinancialData"][idx]))
+
+    def test_complete_iban_CP_IBAN_APPROX_V1(self):
+        """ Test the detection of the IBAN account """
+
+        test = "This is the IBAN of the account ES91 2100 xx34 ."
+
+        proximity_dict = {"FinancialData": {"span_len": 50,
+                                            "word_list": "IBAN"}}
+        
+        ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
+        result = ner.regex_detection(test, full_text=test)
+
+        self.assertTrue("FinancialData" in result,
+                        "{} IBAN was not detected {}".format(
+                            self.shortDescription(),
+                            result))
+
+        idx = -1
+        for i, _regexp in enumerate(result["FinancialData"]):
+            if _regexp[1] == "CP_IBAN_APPROX_V1":
+                idx = i
+                break
+
+        self.assertEqual(clean_text(result["FinancialData"][idx][0]),
+                         "ES912100xx34",
                          "{} wrong IBAN detected. Detected {}".format(
                              self.shortDescription(),
                              result["FinancialData"][idx]))
@@ -451,7 +478,7 @@ class RegexTest(unittest.TestCase):
             "word_list": "tel."}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
-        result = ner.regex_detection(test)
+        result = ner.regex_detection(test, full_text=test)
         
         self.assertTrue("PHONE" in result,
                         "{} PHONE was not detected {}".format(
@@ -474,7 +501,7 @@ class RegexTest(unittest.TestCase):
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         
-        result = ner.regex_detection(test)
+        result = ner.regex_detection(test, full_text=test)
         
         self.assertTrue("PHONE" not in result,
                         "{} PHONE was detected but it shouldn't{}".format(
@@ -492,7 +519,7 @@ class RegexTest(unittest.TestCase):
 
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         
-        result = ner.regex_detection(test)
+        result = ner.regex_detection(test, full_text=test)
         
         self.assertTrue("MOBILE" in result,
                         "{} Mobile phone was not detected {}".format(
