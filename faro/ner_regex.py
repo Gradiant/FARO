@@ -73,7 +73,6 @@ DICT_REGEX_BROAD = {"CreditCard": [(CP_CREDIT_CARD_GEN_V1,
                     "DNI_SPAIN": [(CP_DNI_GEN_V0, "CP_DNI_GEN_V0"),
                                   (CP_CIF_GEN_V0, "CP_CIF_GEN_V0"),
                     ],
-                    "NI_UK": [(CP_NI_UK_V0, "CP_NI_UK_V0")],
                     "PHONE": [
                         (CP_PHONE_NUMBER_GEN_V3, "CP_PHONE_NUMBER_GEN_V3"),
                     ],
@@ -147,6 +146,8 @@ class Regex_Ner(object):
                     for _word in word_list:
                         if _word in span_text:
                             match_found = True
+
+                            print ("MATCH ", _word)
                             break
 
                     if match_found:

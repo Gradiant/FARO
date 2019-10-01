@@ -11,6 +11,11 @@ def normalize_text_proximity(message):
     """
 
     sent = message.lower()
+    sent = sent.replace("á", "a")
+    sent = sent.replace("é", "e")
+    sent = sent.replace("í", "i")
+    sent = sent.replace("ó", "o")
+    sent = sent.replace("ú", "u")
     sent = re.sub(r'(?i)(?<=[a-z])\.(?=[a-z])', "", sent)
 
     return sent

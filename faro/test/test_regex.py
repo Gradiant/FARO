@@ -190,7 +190,7 @@ class RegexTest(unittest.TestCase):
         test = "This is the IBAN of the account ES91 2100 xx34 ."
 
         proximity_dict = {"FinancialData": {"span_len": 50,
-                                            "word_list": "IBAN"}}
+                                            "word_list": ["iban"]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         result = ner._detect_regexp(test, "broad")
@@ -218,7 +218,7 @@ class RegexTest(unittest.TestCase):
         test = "This is the IBAN of the account ES91 2100 xx34 ."
 
         proximity_dict = {"FinancialData": {"span_len": 50,
-                                            "word_list": "IBAN"}}
+                                            "word_list": ["iban"]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         result = ner.regex_detection(test, full_text=test)
@@ -475,7 +475,7 @@ class RegexTest(unittest.TestCase):
 
         proximity_dict = {"PHONE": {
             "span_len": 50,
-            "word_list": "tel."}}
+            "word_list": ["tel."]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         result = ner.regex_detection(test, full_text=test)
@@ -497,7 +497,7 @@ class RegexTest(unittest.TestCase):
 
         proximity_dict = {"PHONE": {
             "span_len": 50,
-            "word_list": "tel."}}
+            "word_list": ["tel."]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         
@@ -508,6 +508,26 @@ class RegexTest(unittest.TestCase):
                             self.shortDescription(),
                             result))
 
+    def test_complete_phone_number_v2(self):
+        """ Detection of phone number """
+
+        test = "tlf.: ESP 980000 "
+
+        proximity_dict = {"PHONE": {
+            "span_len": 50,
+            "word_list": ["tlf."]}}
+        
+        ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
+        
+        result = ner.regex_detection(test, full_text=test)
+
+        print ("Result ", result)
+        
+        self.assertTrue("PHONE" in result,
+                        "{} PHONE was detected {}".format(
+                            self.shortDescription(),
+                            result))
+
     def test_complete_mobile_v0(self):
         """ Detection of phone number """
 
@@ -515,7 +535,7 @@ class RegexTest(unittest.TestCase):
 
         proximity_dict = {"MOBILE": {
             "span_len": 50,
-            "word_list": "móvil"}}
+            "word_list": ["móvil"]}}
 
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
         
