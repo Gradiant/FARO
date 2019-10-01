@@ -13,7 +13,7 @@ from faro.detector import Detector
 from faro.sensitivity_score import Sensitivity_Scorer
 from joblib import load
 from .io_parser import parse_file
-from .utils import preprocess_text
+from .utils import preprocess_text, normalize_text_proximity
 
 # init the seeed of the lang detection algorithm
 DetectorFactory.seed = 0
@@ -69,7 +69,8 @@ def init_detector(config):
 
             with open(config[
                     "proximity_regexp_config"][key]["word_file"], "r") as f_in:
-                word_list = [line.rstrip("\n").strip() for line in f_in]
+                word_list = [normalize_text_proximity(
+                    line.rstrip("\n").strip()) for line in f_in]
             
             regexp_config_dict[key]["word_list"] = word_list
         

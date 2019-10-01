@@ -1,10 +1,5 @@
-DNI
-NIF
 dni
+documento nacional de identidad
+documento
 nif
-D.N.I
-CIF
-c.i.f
 cif
-d.n.i
-N.I.F.

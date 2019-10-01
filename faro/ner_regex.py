@@ -1,6 +1,7 @@
 import logging
 import copy
 import regex as re
+from .utils import clean_text, normalize_text_proximity
 from collections import OrderedDict
 
 
@@ -139,7 +140,8 @@ class Regex_Ner(object):
                     if span_start < 0:
                         span_start = 0
 
-                    span_text = full_text[span_start:span_end]
+                    span_text = normalize_text_proximity(
+                        full_text[span_start:span_end])
 
                     match_found = False
                     for _word in word_list:
@@ -178,10 +180,10 @@ class Regex_Ner(object):
             
             if key in result_dict:
                 # get the consolidated regexp
-                consolidated_list = [regexp[0] for regexp in result_dict[key]]
+                consolidated_list = [clean_text(regexp[0]) for regexp in result_dict[key]]
 
             for _broad_regexp in result_broad_dict[key]:
-                if _broad_regexp[0] not in consolidated_list:
+                if clean_text(_broad_regexp[0]) not in consolidated_list:
                     if key not in unconsolidated_dict:
                         unconsolidated_dict[key] = []
 

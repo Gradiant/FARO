@@ -2,8 +2,27 @@ import re
 import gensim.utils as gensim_utils
 
 
+def normalize_text_proximity(message):
+    """ Clean text of dots between words
+    
+    Keyword arguments:
+    message -- a plain sentence or paragraph
+
+    """
+
+    sent = message.lower()
+    sent = re.sub(r'(?i)(?<=[a-z])\.(?=[a-z])', "", sent)
+
+    return sent
+
+
 def clean_text(message):
-    """ Delete extra characters from text before validation """
+    """ Delete extra characters from text before validation
+    
+    Keyword arguments:
+    message -- a plain sentence or paragraph
+
+    """
 
     sent = re.sub(r'[\-_*+,\(\).:]{1,}', "", message)
     sent = re.sub(r'[ ]{1,}', "", sent)

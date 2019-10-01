@@ -1,4 +1,7 @@
-VISA
-Mastercard
+tarjeta
+credito
+debito
 visa
 mastercard
+cvc
+cvv

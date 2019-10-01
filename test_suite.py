@@ -19,9 +19,11 @@ import xmlrunner
 
 
 from faro.test import test_regex
+from faro.test import test_utils
 
 suite = unittest.TestSuite()
 suite.addTest(unittest.makeSuite(test_regex.RegexTest))
+suite.addTest(unittest.makeSuite(test_utils.UtilsTest))
 
 test_runner = xmlrunner.XMLTestRunner(output='test-reports').run(suite)
        
