@@ -64,8 +64,11 @@ def init_detector(config):
     if "proximity_regexp_config" in config:
         for key in config["proximity_regexp_config"]:
             regexp_config_dict[key] = OrderedDict()
-            regexp_config_dict[key]["span_len"] = int(
-                config["proximity_regexp_config"][key]["span_len"])
+            regexp_config_dict[key]["left_span_len"] = int(
+                config["proximity_regexp_config"][key]["left_span_len"])
+
+            regexp_config_dict[key]["right_span_len"] = int(
+                config["proximity_regexp_config"][key]["right_span_len"])
 
             with open(config[
                     "proximity_regexp_config"][key]["word_file"], "r") as f_in:

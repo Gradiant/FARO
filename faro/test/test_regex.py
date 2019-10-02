@@ -115,15 +115,17 @@ class RegexTest(unittest.TestCase):
         test = "Mi teléfono móvil es 688 888 888 "
         ner = ner_regex.Regex_Ner()
 
-        result = ner._detect_regexp(test, "strict")
+        result = ner._detect_regexp(test, "broad")
 
         self.assertTrue("MOBILE" in result,
                         "{} Mobile phone was not detected {}".format(
                             self.shortDescription(),
                             result))
 
+        print ("Result ", result)
+        
         for i, _regexp in enumerate(result["MOBILE"]):
-            if _regexp[1] == "CP_MOBILE_PHONE_NUMBER_APPROX_V0":
+            if _regexp[1] == "CP_MOBILE_NUMBER_GEN_V3":
                 idx = i
                 break
 
@@ -189,7 +191,8 @@ class RegexTest(unittest.TestCase):
 
         test = "This is the IBAN of the account ES91 2100 xx34 ."
 
-        proximity_dict = {"FinancialData": {"span_len": 50,
+        proximity_dict = {"FinancialData": {"left_span_len": 20,
+                                            "right_span_len": 0,
                                             "word_list": ["iban"]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
@@ -217,7 +220,8 @@ class RegexTest(unittest.TestCase):
 
         test = "This is the IBAN of the account ES91 2100 xx34 ."
 
-        proximity_dict = {"FinancialData": {"span_len": 50,
+        proximity_dict = {"FinancialData": {"left_span_len": 20,
+                                            "right_span_len": 0,
                                             "word_list": ["iban"]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
@@ -474,7 +478,8 @@ class RegexTest(unittest.TestCase):
         test = "tel.: ESP 98000000"
 
         proximity_dict = {"PHONE": {
-            "span_len": 50,
+            "left_span_len": 20,
+            "right_span_len": 0,
             "word_list": ["tel."]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
@@ -496,7 +501,8 @@ class RegexTest(unittest.TestCase):
         test = "fax: ESP 98000000"
 
         proximity_dict = {"PHONE": {
-            "span_len": 50,
+            "left_span_len": 20,
+            "right_span_len": 0,
             "word_list": ["tel."]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
@@ -514,7 +520,8 @@ class RegexTest(unittest.TestCase):
         test = "tlf.: ESP 980000 "
 
         proximity_dict = {"PHONE": {
-            "span_len": 50,
+            "left_span_len": 20,
+            "right_span_len": 0,
             "word_list": ["tlf."]}}
         
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)
@@ -534,7 +541,8 @@ class RegexTest(unittest.TestCase):
         test = "móvil: ESP 98000000"
 
         proximity_dict = {"MOBILE": {
-            "span_len": 50,
+            "left_span_len": 20,
+            "right_span_len": 0,
             "word_list": ["móvil"]}}
 
         ner = ner_regex.Regex_Ner(regexp_config_dict=proximity_dict)

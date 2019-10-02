@@ -7,45 +7,42 @@ from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
 
+# Email
 CP_EMAIL_ADDRESS_V0 = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 
+# Credit Card
 CP_CREDIT_CARD_V0 = (r"(?:(?P<visa>((?<![0-9])(?<![0-9][,.]))4[0-9]{12}(?:[0-9]{3})?)|(?P<mastercard>((?<![0-9])(?<![0-9][,.]))5[1-5][0-9]{14})|(?P<discover>((?<![0-9])(?<![0-9][,.]))6(?:011|5[0-9][0-9])[0-9]{12}))")
+CP_CREDIT_CARD_GEN_V1 = r"([0-9][\s\-_\.]*){8,}"
 
-CP_CREDIT_CARD_GEN_V0 = (r"([0-9]{13}(?:[0-9]{3})?)|([0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4})")
-CP_CREDIT_CARD_GEN_V1 = r"([0-9][\s\-_\.]*){4,}"
-CP_IBAN_V0 = r"\b[A-Z]{2}[0-9]{2}(?:\s+?[0-9]{4}){5}(?!(?:\s+?[0-9]){3})(?:\s+?[0-9]{1,2})?\b"
-
+# Financial Data
 CP_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}\b"
-CP_IBAN_APPROX_V0 = r"\b(?i)iban.*?\K[A-Z][A-Z]([0-9].{0,3}){4,}\b"
-CP_IBAN_APPROX_V1 = r"(ES)([0-9].{0,3}){4,}"
+CP_IBAN_APPROX_V1 = r"[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}"
 
+# DNI_SPAIN
 CP_DNI_V0 = r"(\b|[\(]|\bnº|\bNº)[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z](\b|[\)\.\],:])"
 CP_CIF_V0 = r"(\b|[\(]|\bnº|\bNº)[A-Za-z][\-\.\s]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\b|[\)\.\],:])"
-
 CP_DNI_GEN_V0 = r"[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z]?"
 CP_CIF_GEN_V0 = r"[A-Za-z][\-\.\s]?[0-9]{2}([\.\-\s]?)[0-9]{3}([\-\.\s]?)[0-9]{3}"
 
+# NI_UK
 CP_NI_UK_V0 = r"\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]?\b"
 
-CP_PHONE_NUMBER_V0 = r"\b(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
+# Money
+CP_EURO_V0 = r"(?i)\b(\d+\.)*\d+(,\d{2,})*(\.\d*)?(?=(\s*€|\s*euros|\s*de\s+euros|\s*eur)\b)"
 
-CP_PHONE_NUMBER_APPROX_V0 = r"(?i)\b(?:(?<=tfno).*?)([0-9][\s\-.]*){6,}\b"
-CP_PHONE_NUMBER_APPROX_V1 = r"(?i)\b(?:(?<=teléfono).*?)([0-9][\s\-.]*){6,}\b"
-CP_PHONE_NUMBER_APPROX_V2 = r"(?i)\b(?:(?<=tel.).*?)([0-9][\s\-.]*){6,}\b"
-CP_PHONE_NUMBER_APPROX_V3 = r"(?i)\b(tfno|tel\b|teléfono).*?\K([0-9][\s\-.]*){6,}\b"
-
-CP_PHONE_NUMBER_GEN_V3 = r"(?i)([0-9][\s\-.]*){6,}"
-CP_MOBILE_NUMBER_GEN_V3 = r"(?i)([0-9][\s\-.]*){6,}"
-
-CP_MOBILE_PHONE_NUMBER_V0 = r"\b(\+34|0034|34|\(\+34\))?[\s|\-|\.]?(?<![0-9])[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\b"
-
-CP_MOBILE_PHONE_NUMBER_V1 = r"\b(?<![\d])\b[6|7][\s|\-|\.]?([0-9][\s|\-|\.]?){8}\b"
-CP_MOBILE_PHONE_NUMBER_APPROX_V0 = r"(?i)\b(móvil|móv\b|mov\b).*?\K([0-9][\s\-.]*){6,}\b"
-
+# Prob Currency
 CP_MONEY_V0 = r"\b(?<!\.)\d+(\.\d{3,})+(,\d{2,})*(\.\d*)?\b"
 CP_MONEY_V1 = r"\b(?<![,\.])\d+(,\d{2,})\b"
-CP_EURO_V0 = r"(?i)(\d+\.)*\d+(,\d{2,})*(\.\d*)?(?=(\s*€|\s*euros|\s*de\s+euros|\s*eur))"
+
+# Phone
+CP_PHONE_NUMBER_GEN_V3 = r"(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
+
+# Mobile
+CP_MOBILE_NUMBER_GEN_V3 = r"[67](\s+|-\.)?([0-9](\s+|-|\.)?){8}"
+
+# Signature
 CP_FIRMA_V0 = r"Firmado por|Firmado|Fdo\.|Signed by|Firma\s|firma del representante"
+
 
 DICT_REGEX_STRICT = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
                      "CreditCard": [(CP_CREDIT_CARD_V0, "CP_CREDIT_CARD_V0")],
@@ -54,12 +51,6 @@ DICT_REGEX_STRICT = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
                                    (CP_CIF_V0, "CP_CIF_V0"),
                      ],
                      "NI_UK": [(CP_NI_UK_V0, "CP_NI_UK_V0")],
-                     "PHONE": [
-                         (CP_PHONE_NUMBER_APPROX_V3, "CP_PHONE_NUMBER_APPROX_V3"),
-                     ],
-                     "MOBILE": [
-                         (CP_MOBILE_PHONE_NUMBER_APPROX_V0,
-                          "CP_MOBILE_PHONE_NUMBER_APPROX_V0")],
                      "MONEY": [(CP_EURO_V0, "CP_EURO_V0")],
                      "PROB_CURRENCY": [(CP_MONEY_V0, "CP_MONEY_V0"),
                                        (CP_MONEY_V1, "CP_MONEY_V1")],
@@ -68,7 +59,8 @@ DICT_REGEX_STRICT = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
 
 DICT_REGEX_BROAD = {"CreditCard": [(CP_CREDIT_CARD_GEN_V1,
                                     "CP_CREDIT_CARD_GEN_V1")],
-                    "FinancialData": [(CP_IBAN_APPROX_V1, "CP_IBAN_APPROX_V1")],
+                    "FinancialData": [(CP_IBAN_APPROX_V1,
+                                       "CP_IBAN_APPROX_V1")],
                     "DNI_SPAIN": [(CP_DNI_GEN_V0, "CP_DNI_GEN_V0"),
                                   (CP_CIF_GEN_V0, "CP_CIF_GEN_V0"),
                     ],
@@ -124,15 +116,16 @@ class Regex_Ner(object):
         
         for key in unconsolidated_dict:
             if key in self.regexp_config_dict:
-                span_len = self.regexp_config_dict[key]["span_len"]
+                left_span_len = self.regexp_config_dict[key]["left_span_len"]
+                right_span_len = self.regexp_config_dict[key]["right_span_len"]
                 word_list = self.regexp_config_dict[key]["word_list"]
 
                 for _regexp in unconsolidated_dict[key]:
                     idx_reg_start = _regexp[2] + offset
                     idx_reg_end = _regexp[3] + offset
 
-                    span_start = idx_reg_start - span_len
-                    span_end = idx_reg_end + span_len
+                    span_start = idx_reg_start - left_span_len
+                    span_end = idx_reg_end + right_span_len
 
                     # safety check: span_start cannot be lower than 0 (beginning of file)
                     if span_start < 0:
