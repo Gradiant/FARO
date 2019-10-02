@@ -35,7 +35,7 @@ class Detector(object):
         """ Extract KPIs from document """
 
         # full_text is used for proximity detection
-        full_text = "\n".join(sent_list)
+        full_text = "".join(sent_list)
         
         total_ent_list = []
 
