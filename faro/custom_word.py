@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class Custom_Word_Detector(object):
     """ Detect custom words in texts """
 
-    def _search_words_with_spacy(self, sentence):
+    def _search_words_with_spacy(self, sentence, normalize_word=True):
 
         detection_list = []
                 
@@ -16,8 +16,13 @@ class Custom_Word_Detector(object):
             if (token.text.lower() in self.word_list or
                 token.lemma_.lower() in self.word_list):
 
-                detection_list.append([token.text, "CUSTOM", token.idx,
-                                       token.idx + len(token.text)])
+                if not normalize_word:
+                    detection_list.append([token.text, "CUSTOM", token.idx,
+                                           token.idx + len(token.text)])
+                else:
+                    detection_list.append([token.lemma_.lower(),
+                                           "CUSTOM", token.idx,
+                                           token.idx + len(token.text)])
                 
         return detection_list
 
