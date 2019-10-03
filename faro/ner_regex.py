@@ -8,68 +8,81 @@ from collections import OrderedDict
 logger = logging.getLogger(__name__)
 
 # Email
-CP_EMAIL_ADDRESS_V0 = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+STRICT_REG_EMAIL_ADDRESS_V0 = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 
 # Credit Card
-CP_CREDIT_CARD_V0 = (r"(?:(?P<visa>((?<![0-9])(?<![0-9][,.]))4[0-9]{12}(?:[0-9]{3})?)|(?P<mastercard>((?<![0-9])(?<![0-9][,.]))5[1-5][0-9]{14})|(?P<discover>((?<![0-9])(?<![0-9][,.]))6(?:011|5[0-9][0-9])[0-9]{12}))")
-CP_CREDIT_CARD_GEN_V1 = r"([0-9][\s\-_\.]*){8,}"
+STRICT_REG_CREDIT_CARD_V0 = (r"(?:(?P<visa>((?<![0-9])(?<![0-9][,.]))4[0-9]{12}(?:[0-9]{3})?)|(?P<mastercard>((?<![0-9])(?<![0-9][,.]))5[1-5][0-9]{14})|(?P<discover>((?<![0-9])(?<![0-9][,.]))6(?:011|5[0-9][0-9])[0-9]{12}))")
+BROAD_REG_CREDIT_CARD_GEN_V1 = r"([0-9][\s\-_\.]*){8,}"
 
 # Financial Data
-CP_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}\b"
-CP_IBAN_APPROX_V1 = r"[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}"
+STRICT_REG_IBAN_V1 = r"\b[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}\b"
+BROAD_REG_IBAN_APPROX_V1 = r"[a-zA-Z]{2}[\s\-_]*[0-9]{2}([\s\-_]*[0-9]{4}){5}"
 
 # DNI_SPAIN
-CP_DNI_V0 = r"(\b|[\(]|\bnº|\bNº)[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z](\b|[\)\.\],:])"
-CP_CIF_V0 = r"(\b|[\(]|\bnº|\bNº)[A-Za-z][\-\.\s]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\b|[\)\.\],:])"
-CP_DNI_GEN_V0 = r"[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z]?"
-CP_CIF_GEN_V0 = r"[A-Za-z][\-\.\s]?[0-9]{2}([\.\-\s]?)[0-9]{3}([\-\.\s]?)[0-9]{3}"
+STRICT_REG_DNI_V0 = r"(\b|[\(]|\bnº|\bNº)[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z](\b|[\)\.\],:])"
+STRICT_REG_CIF_V0 = r"(\b|[\(]|\bnº|\bNº)[A-Za-z][\-\.\s]?[0-9]{2}(\.?)[0-9]{3}(\.?)[0-9]{3}(\b|[\)\.\],:])"
+BROAD_REG_DNI_GEN_V0 = r"[0-9,X,M,L,K,Y][\-\. ]?[0-9]{7}[\-\. ]?[A-Z]?"
+BROAD_REG_CIF_GEN_V0 = r"[A-Za-z][\-\.\s]?[0-9]{2}([\.\-\s]?)[0-9]{3}([\-\.\s]?)[0-9]{3}"
 
 # NI_UK
-CP_NI_UK_V0 = r"\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]?\b"
+STRICT_REG_NI_UK_V0 = r"\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]?\b"
 
 # Money
-CP_EURO_V0 = r"(?i)\b(\d+\.)*\d+(,\d{2,})*(\.\d*)?(?=(\s*€|\s*euros|\s*de\s+euros|\s*eur)\b)"
+STRICT_REG_EURO_V0 = r"(?i)\b(\d+\.)*\d+(,\d{2,})*(\.\d*)?(?=(\s*€|\s*euros\b|\s*de\s+euros\b|\s*eur\b))"
 
 # Prob Currency
-CP_MONEY_V0 = r"\b(?<!\.)\d+(\.\d{3,})+(,\d{2,})*(\.\d*)?\b"
-CP_MONEY_V1 = r"\b(?<![,\.])\d+(,\d{2,})\b"
+STRICT_REG_MONEY_V0 = r"\b(?<!\.)\d+(\.\d{3,})+(,\d{2,})*(\.\d*)?\b"
+STRICT_REG_MONEY_V1 = r"\b(?<![,\.])\d+(,\d{2,})\b"
 
 # Phone
-CP_PHONE_NUMBER_GEN_V3 = r"(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
+BROAD_REG_PHONE_NUMBER_GEN_V3 = r"(\(?\s*(\+34|0034|34)\s*\)?\s*)?[89](\s+|-\.)?([0-9](\s+|-|\.)?){8}"
+
+#r"(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
 
 # Mobile
-CP_MOBILE_NUMBER_GEN_V3 = r"[67](\s+|-\.)?([0-9](\s+|-|\.)?){8}"
+BROAD_REG_MOBILE_NUMBER_GEN_V3 = r"[67](\s+|-\.)?([0-9](\s+|-|\.)?){8}"
 
 # Signature
-CP_FIRMA_V0 = r"Firmado por|Firmado|Fdo\.|Signed by|Firma\s|firma del representante"
+STRICT_REG_FIRMA_V0 = r"Firmado por|Firmado|Fdo\.|Signed by|Firma\s|firma del representante"
 
 
-DICT_REGEX_STRICT = {"Email": [(CP_EMAIL_ADDRESS_V0, "CP_EMAIL_ADDRESS_V0")],
-                     "CreditCard": [(CP_CREDIT_CARD_V0, "CP_CREDIT_CARD_V0")],
-                     "FinancialData": [(CP_IBAN_V1, "CP_IBAN_V1")],
-                     "DNI_SPAIN": [(CP_DNI_V0, "CP_DNI_V0"),
-                                   (CP_CIF_V0, "CP_CIF_V0"),
+DICT_REGEX_STRICT = {"Email": [(STRICT_REG_EMAIL_ADDRESS_V0,
+                                "STRICT_REG_EMAIL_ADDRESS_V0")],
+                     "CreditCard": [(STRICT_REG_CREDIT_CARD_V0,
+                                     "STRICT_REG_CREDIT_CARD_V0")],
+                     "FinancialData": [(STRICT_REG_IBAN_V1,
+                                        "STRICT_REG_IBAN_V1")],
+                     "DNI_SPAIN": [(STRICT_REG_DNI_V0, "STRICT_REG_DNI_V0"),
+                                   (STRICT_REG_CIF_V0, "STRICT_REG_CIF_V0"),
                      ],
-                     "NI_UK": [(CP_NI_UK_V0, "CP_NI_UK_V0")],
-                     "MONEY": [(CP_EURO_V0, "CP_EURO_V0")],
-                     "PROB_CURRENCY": [(CP_MONEY_V0, "CP_MONEY_V0"),
-                                       (CP_MONEY_V1, "CP_MONEY_V1")],
-                     "SIGNATURE": [(CP_FIRMA_V0, "CP_FIRMA_V0")]}
+                     "NI_UK": [(STRICT_REG_NI_UK_V0,
+                                "STRICT_REG_NI_UK_V0")],
+                     "MONEY": [(STRICT_REG_EURO_V0,
+                                "STRICT_REG_EURO_V0")],
+                     "PROB_CURRENCY": [(STRICT_REG_MONEY_V0,
+                                        "STRICT_REG_MONEY_V0"),
+                                       (STRICT_REG_MONEY_V1,
+                                        "STRICT_REG_MONEY_V1")],
+                     "SIGNATURE": [(STRICT_REG_FIRMA_V0,
+                                    "STRICT_REG_FIRMA_V0")]}
 
 
-DICT_REGEX_BROAD = {"CreditCard": [(CP_CREDIT_CARD_GEN_V1,
-                                    "CP_CREDIT_CARD_GEN_V1")],
-                    "FinancialData": [(CP_IBAN_APPROX_V1,
-                                       "CP_IBAN_APPROX_V1")],
-                    "DNI_SPAIN": [(CP_DNI_GEN_V0, "CP_DNI_GEN_V0"),
-                                  (CP_CIF_GEN_V0, "CP_CIF_GEN_V0"),
+DICT_REGEX_BROAD = {"CreditCard": [(BROAD_REG_CREDIT_CARD_GEN_V1,
+                                    "BROAD_REG_CREDIT_CARD_GEN_V1")],
+                    "FinancialData": [(BROAD_REG_IBAN_APPROX_V1,
+                                       "BROAD_REG_IBAN_APPROX_V1")],
+                    "DNI_SPAIN": [(BROAD_REG_DNI_GEN_V0,
+                                   "BROAD_REG_DNI_GEN_V0"),
+                                  (BROAD_REG_CIF_GEN_V0,
+                                   "BROAD_REG_CIF_GEN_V0"),
                     ],
                     "PHONE": [
-                        (CP_PHONE_NUMBER_GEN_V3, "CP_PHONE_NUMBER_GEN_V3"),
+                        (BROAD_REG_PHONE_NUMBER_GEN_V3,
+                         "BROAD_REG_PHONE_NUMBER_GEN_V3"),
                     ],
                     "MOBILE": [
-                        (CP_MOBILE_NUMBER_GEN_V3,
-                         "CP_MOBILE_NUMBER_GEN_V3")]}
+                        (BROAD_REG_MOBILE_NUMBER_GEN_V3,
+                         "BROAD_REG_MOBILE_NUMBER_GEN_V3")]}
 
 
 class Regex_Ner(object):
