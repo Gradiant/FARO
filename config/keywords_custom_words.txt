@@ -1,0 +1,11 @@
+total
+confidencial
+contrato
+crédito
+oferta
+importe
+factura
+contraseña
+passwd
+pwd
+key

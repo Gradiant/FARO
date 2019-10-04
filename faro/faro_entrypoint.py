@@ -57,7 +57,8 @@ def init_detector(config):
     custom_word_list = []
 
     if "custom_word_list" in config:
-        custom_word_list = config["custom_word_list"]
+        with open(config["custom_word_list"], "r") as f_in:
+            custom_word_list = [line.rstrip("\n") for line in f_in]
 
     # configuration of the proximity regexp
     regexp_config_dict = OrderedDict()

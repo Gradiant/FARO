@@ -43,14 +43,7 @@ ent_keys_dump:
     CUSTOM: custom_words
     PROB_CURRENCY: prob_currency
 
-custom_word_list:
-   - total
-   - confidencial
-   - contrato
-   - crédito
-   - oferta
-   - importe
-   - factura
+custom_word_list: config/keywords_custom_words.txt
 
 sensitivity:
     low: 

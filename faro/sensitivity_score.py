@@ -108,7 +108,10 @@ class Sensitivity_Scorer(object):
                 if "custom_words" not in result_dict:
                     result_dict["custom_words"] = 0
 
-                result_dict["custom_words"] = len(entity_dict[key])
+                # in this special case we take the number of occurrence rather than
+                # the number of unique values
+                for token_key in entity_dict["CUSTOM"]:
+                    result_dict["custom_words"] += entity_dict["CUSTOM"][token_key]
                     
         score = self._get_ranking(result_dict)
 

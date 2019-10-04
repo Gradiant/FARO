@@ -454,6 +454,43 @@ class RegexTest(unittest.TestCase):
                          "{} wrong dni detected. Detected {}".format(
                              self.shortDescription(),
                              result["DNI_SPAIN"][idx]))
+
+    def test_strict_dni_v2(self):
+        """ Detection of DNI"""
+
+        test = "15373458B"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner._detect_regexp(test, "strict")
+        
+        self.assertTrue("DNI_SPAIN" in result,
+                        "{} DNI_SPAIN was not detected {}".format(
+                            self.shortDescription(),
+                            result))
+        
+        idx = -1
+        for i, _regexp in enumerate(result["DNI_SPAIN"]):
+            if _regexp[1] == "STRICT_REG_DNI_V0":
+                idx = i
+                break
+            
+        self.assertEqual(clean_text(result["DNI_SPAIN"][idx][0]), "15373458B",
+                         "{} wrong dni detected. Detected {}".format(
+                             self.shortDescription(),
+                             result["DNI_SPAIN"][idx]))
+
+    def test_strict_dni_v3(self):
+        """ Detection of DNI"""
+
+        test = "15373458Bé"
+
+        ner = ner_regex.Regex_Ner()
+        result = ner._detect_regexp(test, "strict")
+        
+        self.assertTrue("DNI_SPAIN" not in result,
+                        "{} DNI_SPAIN was not detected {}".format(
+                            self.shortDescription(),
+                            result))
         
     def test_broad_phone_number_v4(self):
         """ Detection of phone number """

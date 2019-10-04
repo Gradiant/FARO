@@ -19,9 +19,9 @@ from .email import Corporative_Detection
 from .ner_regex import Regex_Ner
 from .utils import clean_text
 from .custom_word import Custom_Word_Detector
-from luhn import verify as verify_card
 from stdnum import get_cc_module
-
+from stdnum.luhn import validate
+from stdnum.exceptions import InvalidChecksum
 
 logger = logging.getLogger(__name__)
 
@@ -86,17 +86,18 @@ class Detector(object):
 
                     elif ent_key == "CreditCard":
                         sent = clean_text(ent[0])
+                        try:
+                            if validate(sent):
+                                logger.debug(
+                                    "Credit card accepted {}.{}".format(
+                                        sent, ent[0]))
 
-                        if verify_card(sent):
-                            logger.debug(
-                                "Credit card accepted {}.{}".format(
-                                    sent, ent[0]))
+                                total_ent_list.append((ent[0], "FinancialData",
+                                                       ent[1],
+                                                       str(ent[2] + offset),
+                                                       str(ent[3] + offset)))
 
-                            total_ent_list.append((ent[0], "FinancialData",
-                                                   ent[1],
-                                                   str(ent[2] + offset),
-                                                   str(ent[3] + offset)))
-                        else:
+                        except InvalidChecksum:
                             logger.debug("Wrong credit card {}.{}.".format(
                                 sent, ent[0]))
 
