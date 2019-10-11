@@ -1,6 +1,6 @@
 FROM alpine:edge
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \ 
-    apk add --no-cache make automake gcc g++ subversion python3-dev bash parallel git openjdk8-jre python3 py3-scipy py3-pandas py3-scikit-learn
+    apk add --no-cache make automake gcc g++ subversion python3-dev bash parallel openjdk8-jre python3 py3-scipy py3-pandas py3-scikit-learn
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN mkdir -p /opt/faro
 COPY . /opt/faro
