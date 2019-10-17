@@ -132,9 +132,6 @@ class Detector(object):
                     if _ent[1] == "PER":
                         if int(_ent[3]) > person_signed_idx:
                             if int(_ent[3]) - person_signed_idx < min_itx_signed:
-                                logger.info("MIN SIGNED {} {}".format(
-                                    min_itx_signed, person_signed_idx))
-                            
                                 min_itx_signed = int(_ent[3]) - person_signed_idx
                                 id_min_itx = i
                                 next_person_has_signed = False
@@ -163,9 +160,6 @@ class Detector(object):
                 if ent[1] == "PER":
                     if int(ent[3]) > person_signed_idx:
                         if int(ent[3]) - person_signed_idx < min_itx_signed:
-                            logger.info("MIN SIGNED {} {}".format(
-                                min_itx_signed, person_signed_idx))
-                            
                             min_itx_signed = int(ent[3]) - person_signed_idx
                             id_min_itx = i
                             next_person_has_signed = False
