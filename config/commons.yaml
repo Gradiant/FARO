@@ -45,6 +45,12 @@ ent_keys_dump:
 
 custom_word_list: config/keywords_custom_words.txt
 
+
+signature_max_distance: 15
+
+low_priority_list:
+    - PROB_CURRENCY
+
 sensitivity:
     low: 
         person_position_organization:

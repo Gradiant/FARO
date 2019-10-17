@@ -82,7 +82,7 @@ class Detector(object):
 
                     elif ent_key == "SIGNATURE":
                         next_person_has_signed = True
-                        person_signed_idx = ent[3] + offset
+                        person_signed_idx = int(ent[3]) + offset
 
                     elif ent_key == "CreditCard":
                         sent = clean_text(ent[0])
@@ -123,18 +123,22 @@ class Detector(object):
                                                str(ent[3] + offset)))
 
             if next_person_has_signed:
-                min_itx_signed = 65555
+                min_itx_signed = self.signature_max_distance
                 id_min_itx = -1
-
+                
                 for i in range(len(total_ent_list)):
                     _ent = total_ent_list[i]
+
                     if _ent[1] == "PER":
-                        if int(_ent[4]) > person_signed_idx:
-                            if int(_ent[4]) < min_itx_signed:
-                                min_itx_signed = int(_ent[4])
+                        if int(_ent[3]) > person_signed_idx:
+                            if int(_ent[3]) - person_signed_idx < min_itx_signed:
+                                logger.info("MIN SIGNED {} {}".format(
+                                    min_itx_signed, person_signed_idx))
+                            
+                                min_itx_signed = int(_ent[3]) - person_signed_idx
                                 id_min_itx = i
                                 next_person_has_signed = False
-
+                        
                 if id_min_itx != -1:
                     _ent = total_ent_list[id_min_itx]
 
@@ -151,15 +155,18 @@ class Detector(object):
             offset += len(sent)
 
         if next_person_has_signed:
-            min_itx_signed = 65555
+            min_itx_signed = self.signature_max_distance
             id_min_itx = -1
 
             for i in range(len(total_ent_list)):
                 ent = total_ent_list[i]
                 if ent[1] == "PER":
-                    if int(ent[4]) > person_signed_idx:
-                        if int(ent[4]) < min_itx_signed:
-                            min_itx_signed = int(ent[4])
+                    if int(ent[3]) > person_signed_idx:
+                        if int(ent[3]) - person_signed_idx < min_itx_signed:
+                            logger.info("MIN SIGNED {} {}".format(
+                                min_itx_signed, person_signed_idx))
+                            
+                            min_itx_signed = int(ent[3]) - person_signed_idx
                             id_min_itx = i
                             next_person_has_signed = False
 
@@ -186,6 +193,36 @@ class Detector(object):
 
         return unique_ent_dict
 
+    def _discard_nonunique_kpis(self, ent_list):
+        """ Discard non priority entities
+
+        Keyword arguments:
+        ent_list -- list of entities extracted by the detector
+
+        """
+
+        visited_entities_dict = OrderedDict()
+
+        if self.low_priority_list is not None:
+            for _ent in ent_list:
+                if _ent[1] not in self.low_priority_list:
+                    visited_entities_dict[_ent[0]] = True
+
+            filtered_entities = []
+
+            for _ent in ent_list:
+                if _ent[1] in self.low_priority_list:
+                    if _ent[0] not in visited_entities_dict:
+                        filtered_entities.append(_ent)
+                    
+                else:
+                    filtered_entities.append(_ent)
+                    
+            return filtered_entities
+
+        else:
+            return ent_list
+    
     def analyse(self, sent_list):
         """ Obtain KPIs from a document and obtain the output in the right format (json)
 
@@ -195,12 +232,16 @@ class Detector(object):
         """
 
         total_ent_list = self._get_kpis(sent_list)
+
+        total_ent_list = self._discard_nonunique_kpis(total_ent_list)
+        
         unique_ent_dict = self._get_unique_ents(total_ent_list)
 
         return unique_ent_dict
 
     def __init__(self, nlp, crf_list, email_detector, crf_ner_classic,
-                 corp_mail_list, custom_word_list, regexp_config_dict):
+                 corp_mail_list, custom_word_list, regexp_config_dict,
+                 signature_max_distance, low_priority_list):
         """ Intialization
 
         Keyword Arguments:
@@ -211,6 +252,8 @@ class Detector(object):
         corp_mail_list -- list with typical corporative names
         custom_word_list -- list with custom words
         regexp_config_dict -- configuration of the proximity detections
+        signature_max_distance -- maximum distance between distance and signature
+        low_priority_list -- list of entity types with low priority
 
         """
 
@@ -224,3 +267,6 @@ class Detector(object):
         self.regex_ner = Regex_Ner(regexp_config_dict=regexp_config_dict)
         self.corp_email_class = Corporative_Detection(
             email_detector, corp_mail_list)
+
+        self.signature_max_distance = signature_max_distance
+        self.low_priority_list = low_priority_list

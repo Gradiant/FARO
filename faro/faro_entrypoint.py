@@ -77,6 +77,10 @@ def init_detector(config):
                     line.rstrip("\n").strip()) for line in f_in]
             
             regexp_config_dict[key]["word_list"] = word_list
+
+    low_priority_list = None
+    if "low_priority_list" in config:
+        low_priority_list = config["low_priority_list"]
         
     my_detector = Detector(nlp,
                            crf_model_list,
@@ -85,7 +89,9 @@ def init_detector(config):
                            crf_ner_classic,
                            corp_mail_list=corp_mail_list,
                            custom_word_list=custom_word_list,
-                           regexp_config_dict=regexp_config_dict)
+                           regexp_config_dict=regexp_config_dict,
+                           signature_max_distance=config["signature_max_distance"],
+                           low_priority_list=low_priority_list)
 
     return my_detector
 
@@ -165,10 +171,11 @@ def faro_execute(params):
 
         with open("config/nolanguage.yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
-
+            
     # joining two dicts with configurations
     config = {**config, **commons_config}
 
+    # instantiate detector with current configuration
     my_detector = init_detector(config)
 
     logger.info("Analysing {}".format(params.input_file))
