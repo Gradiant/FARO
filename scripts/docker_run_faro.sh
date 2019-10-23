@@ -1,3 +1,5 @@
 #!/bin/bash
 echo "Analyzing documents..."
-docker run -v $PWD/$1:/opt/faro/input/$1 -v $PWD/output:/opt/faro/output faro input/$1
+INPUT_PATH=$(cd $1; pwd)
+mkdir -p output
+docker run -v $INPUT_PATH:/opt/faro/input -v $PWD/output:/opt/faro/output faro input \"$INPUT_PATH\"
