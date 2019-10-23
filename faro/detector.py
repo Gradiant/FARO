@@ -13,13 +13,15 @@ Created on 6th of May (2019)
 '''
 
 import logging
-import re
 from collections import OrderedDict
 from .ner import NER
 from .email import Corporative_Detection
 from .ner_regex import Regex_Ner
-from luhn import verify as verify_card
+from .utils import clean_text
+from .custom_word import Custom_Word_Detector
 from stdnum import get_cc_module
+from stdnum.luhn import validate
+from stdnum.exceptions import InvalidChecksum
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,9 @@ class Detector(object):
     def _get_kpis(self, sent_list):
         """ Extract KPIs from document """
 
+        # full_text is used for proximity detection
+        full_text = "".join(sent_list)
+        
         total_ent_list = []
 
         # Flag to indicate that a sign entity is expected (if True)
@@ -55,7 +60,8 @@ class Detector(object):
                     total_ent_list.append(new_ent)
 
             # extract entities (Regex)
-            ent_list_regex = self.regex_ner.regex_detection(sent)
+            ent_list_regex = self.regex_ner.regex_detection(
+                sent, full_text, offset)
 
             for ent_key in ent_list_regex.keys():
                 for ent in ent_list_regex[ent_key]:
@@ -79,31 +85,30 @@ class Detector(object):
                         person_signed_idx = ent[3] + offset
 
                     elif ent_key == "CreditCard":
-                        sent = re.sub(r'[\-_*+,\(\).]{1,}', "", ent[0])
-                        sent = re.sub(r'[ ]{1,}', "", sent)
+                        sent = clean_text(ent[0])
+                        try:
+                            if validate(sent):
+                                logger.debug(
+                                    "Credit card accepted {}.{}".format(
+                                        sent, ent[0]))
 
-                        if verify_card(sent):
-                            logger.debug(
-                                "Credit card accepted {}.{}".format(
-                                    sent, ent[0]))
+                                total_ent_list.append((ent[0], "FinancialData",
+                                                       ent[1],
+                                                       str(ent[2] + offset),
+                                                       str(ent[3] + offset)))
 
-                            total_ent_list.append((ent[0], "FinancialData",
-                                                   ent[1],
-                                                   str(ent[2] + offset),
-                                                   str(ent[3] + offset)))
-                        else:
+                        except InvalidChecksum:
                             logger.debug("Wrong credit card {}.{}.".format(
                                 sent, ent[0]))
 
                     elif ent_key in ["FinancialData", "DNI_SPAIN"]:
-                        sent = re.sub(r'[\-_*+,\(\).]{1,}', "", ent[0])
-                        sent = re.sub(r'[ ]{1,}', "", sent)
-
+                        sent = clean_text(ent[0])
+                        
                         if (get_cc_module('es', 'dni').is_valid(sent) or
                             get_cc_module('es', 'ccc').is_valid(sent) or
                             get_cc_module('es', 'cif').is_valid(sent) or
                             get_cc_module('es', 'iban').is_valid(sent) or
-                                get_cc_module('es', 'nie').is_valid(sent)):
+                            get_cc_module('es', 'nie').is_valid(sent)):
 
                             total_ent_list.append((ent[0], ent_key, ent[1],
                                                    str(ent[2] + offset),
@@ -136,6 +141,13 @@ class Detector(object):
                     total_ent_list.append((_ent[0], "SIGNATURE", _ent[2],
                                            _ent[3], _ent[4]))
 
+            # detection of custom words
+            custom_list = self.custom_detector.search_custom_words(sent)
+            for _ent in custom_list:
+                total_ent_list.append((_ent[0], _ent[1], _ent[0],
+                                       str(_ent[2] + offset),
+                                       str(_ent[3] + offset)))
+                    
             offset += len(sent)
 
         if next_person_has_signed:
@@ -156,7 +168,7 @@ class Detector(object):
 
                 total_ent_list.append((ent[0], "SIGNATURE", ent[2],
                                        ent[3], ent[4]))
-
+                
         return total_ent_list
 
     def _get_unique_ents(self, ent_list):
@@ -188,14 +200,27 @@ class Detector(object):
         return unique_ent_dict
 
     def __init__(self, nlp, crf_list, email_detector, crf_ner_classic,
-                 corp_mail_list):
-        """ Intialization """
+                 corp_mail_list, custom_word_list, regexp_config_dict):
+        """ Intialization
+
+        Keyword Arguments:
+        nlp -- a spacy model or None
+        crf_list -- list of crfs for custom entities detection
+        email_detector -- detector of corporative emails
+        crf_ner_classic -- list of crfs for classic ner detection
+        corp_mail_list -- list with typical corporative names
+        custom_word_list -- list with custom words
+        regexp_config_dict -- configuration of the proximity detections
+
+        """
 
         if nlp is not None:
             self.ml_ner = NER(nlp, None, crf_list, crf_ner_classic)
         else:
             self.ml_ner = None
 
-        self.regex_ner = Regex_Ner()
+        self.custom_detector = Custom_Word_Detector(nlp, custom_word_list)
+
+        self.regex_ner = Regex_Ner(regexp_config_dict=regexp_config_dict)
         self.corp_email_class = Corporative_Detection(
             email_detector, corp_mail_list)

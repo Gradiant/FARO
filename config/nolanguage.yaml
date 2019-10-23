@@ -1,3 +1,29 @@
+proximity_regexp_config:
+   CreditCard:
+       word_file: config/keywords_creditcard_es.txt
+       left_span_len: 20
+       right_span_len: 0
+
+   FinancialData:
+       word_file: config/keywords_financialdata_es.txt
+       left_span_len: 20
+       right_span_len: 0
+
+   DNI_SPAIN:
+       word_file: config/keywords_dni_spain_es.txt
+       left_span_len: 20
+       right_span_len: 0
+
+   PHONE:
+       word_file: config/keywords_phone_es.txt
+       left_span_len: 20
+       right_span_len: 0
+
+   MOBILE:
+       word_file: "config/keywords_mobile_es.txt"
+       left_span_len: 20
+       right_span_len: 0
+
 
 detection:
     crf_ner_list: models/crf_professions_v1.joblib

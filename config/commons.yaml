@@ -4,18 +4,19 @@ logfilter_entity_list:
     - DNI_SPAIN
     - MOBILE
     - MONEY
-    - FIRMA
     - PER_PROF_ORG
+    - SIGNATURE
+    - CUSTOM
+    - PROB_CURRENCY
 
 sensitivity_list:
     - low
     - medium
     - high
 
-
 sensitivity_multiple_kpis: 3
 
-sensitivy_keys_dump:
+sensitivity_keys_dump:
     - person_position_organization
     - monetary_quantity
     - signature
@@ -23,6 +24,7 @@ sensitivy_keys_dump:
     - mobile_phone_number
     - financial_data
     - document_id
+    - custom_words
 
 
 ent_keys_dump:
@@ -35,10 +37,13 @@ ent_keys_dump:
     MONEY: monetary_quantity
     Email: email
     DNI_SPAIN: document_id
-    MOBILE: mobile_pone_number
+    MOBILE: mobile_phone_number
     PHONE: phone_number
     SIGNATURE: signature
+    CUSTOM: custom_words
+    PROB_CURRENCY: prob_currency
 
+custom_word_list: config/keywords_custom_words.txt
 
 sensitivity:
     low: 
@@ -69,6 +74,10 @@ sensitivity:
             min: 0
             max: 0
 
+        custom_words:
+            min: 1
+            max: 65535
+
     medium:
         person_position_organization:
             min: 6
@@ -96,6 +105,10 @@ sensitivity:
             min: 0
             max: 0
 
+        custom_words:
+            min: 65535
+            max: 65535
+
     high:
         person_position_organization:
             min: 65535
@@ -122,3 +135,8 @@ sensitivity:
         document_id:
             min: 1
             max: 65535
+
+        custom_words:
+            min: 65535
+            max: 65535
+

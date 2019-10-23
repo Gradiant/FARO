@@ -81,7 +81,7 @@ class Sensitivity_Scorer(object):
                     entity_dict[key])
 
             elif key == "SIGNATURE":
-                if "sign" not in result_dict:
+                if "signature" not in result_dict:
                     result_dict["signature"] = 0
 
                 result_dict["signature"] = len(entity_dict[key])
@@ -104,6 +104,15 @@ class Sensitivity_Scorer(object):
 
                 result_dict["mobile_phone_number"] = len(entity_dict[key])
 
+            elif key == "CUSTOM":
+                if "custom_words" not in result_dict:
+                    result_dict["custom_words"] = 0
+
+                # in this special case we take the number of occurrence rather than
+                # the number of unique values
+                for token_key in entity_dict["CUSTOM"]:
+                    result_dict["custom_words"] += entity_dict["CUSTOM"][token_key]
+                    
         score = self._get_ranking(result_dict)
 
         return {"score": score, "summary": result_dict}

@@ -15,4 +15,4 @@ def parse_file(file_path):
     """
 
     parsed = parser.from_file(file_path)
-    return parsed['content']
+    return parsed['content'], parsed['metadata']

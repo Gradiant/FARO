@@ -13,7 +13,7 @@ from faro.detector import Detector
 from faro.sensitivity_score import Sensitivity_Scorer
 from joblib import load
 from .io_parser import parse_file
-from .utils import preprocess_text
+from .utils import preprocess_text, normalize_text_proximity
 
 # init the seeed of the lang detection algorithm
 DetectorFactory.seed = 0
@@ -50,17 +50,42 @@ def init_detector(config):
                 corp_mail_list.append(line)
 
     # build the system here
-
     nlp = None
     if "nlp_model" in config["detection"]:
         nlp = spacy.load(config["detection"]["nlp_model"])
 
+    custom_word_list = []
+
+    if "custom_word_list" in config:
+        with open(config["custom_word_list"], "r") as f_in:
+            custom_word_list = [line.rstrip("\n") for line in f_in]
+
+    # configuration of the proximity regexp
+    regexp_config_dict = OrderedDict()
+    if "proximity_regexp_config" in config:
+        for key in config["proximity_regexp_config"]:
+            regexp_config_dict[key] = OrderedDict()
+            regexp_config_dict[key]["left_span_len"] = int(
+                config["proximity_regexp_config"][key]["left_span_len"])
+
+            regexp_config_dict[key]["right_span_len"] = int(
+                config["proximity_regexp_config"][key]["right_span_len"])
+
+            with open(config[
+                    "proximity_regexp_config"][key]["word_file"], "r") as f_in:
+                word_list = [normalize_text_proximity(
+                    line.rstrip("\n").strip()) for line in f_in]
+            
+            regexp_config_dict[key]["word_list"] = word_list
+        
     my_detector = Detector(nlp,
                            crf_model_list,
                            load(config[
                                "detection"]["personal_email_detection"]),
                            crf_ner_classic,
-                           corp_mail_list=corp_mail_list)
+                           corp_mail_list=corp_mail_list,
+                           custom_word_list=custom_word_list,
+                           regexp_config_dict=regexp_config_dict)
 
     return my_detector
 
@@ -99,7 +124,13 @@ def faro_execute(params):
     logger.debug("OUTPUTENTITYFILE {}".format(output_entity_file))
 
     # parse input file and join sentences if requested
-    file_lines = parse_file(input_file).split("\n")
+    file_lines, metadata = parse_file(input_file)
+    file_lines = file_lines.split("\n")
+
+    if isinstance(metadata["Content-Type"], list):
+        content_type = str(metadata["Content-Type"][0])
+    else:
+        content_type = metadata["Content-Type"]
 
     new_file_lines = []
     for line in file_lines:
@@ -135,13 +166,12 @@ def faro_execute(params):
         with open("config/nolanguage.yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
 
-    # joining two configurations dict
+    # joining two dicts with configurations
     config = {**config, **commons_config}
 
     my_detector = init_detector(config)
 
     logger.info("Analysing {}".format(params.input_file))
-
     accepted_entity_dict = my_detector.analyse(file_lines)
 
     # TODO: translate dictionary keys to build a coherent tool
@@ -155,8 +185,10 @@ def faro_execute(params):
 
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
-                           "datetime": st}
+                           "datetime": st,
+                           "Content-Type": content_type}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
+            
         else:
             # Only show entities appearing in logfilter_entity_list
             filtered_json = OrderedDict()
@@ -170,16 +202,20 @@ def faro_execute(params):
 
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
-                           "datetime": st}
+                           "datetime": st,
+                           "Content-Type": content_type}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
     # score the document, given the extracted entities
     scorer = Sensitivity_Scorer(config["sensitivity"],
                                 config["sensitivity_list"],
                                 config["sensitivity_multiple_kpis"])
-
+    
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
+    # Adding metadata of fyle type to output
+    dict_result["content-type"] = content_type
+    
     # dump the score to file or stdout (if dump flag is activated)
     logging.debug("JSON (Entities detected) {}".format(
         json.dumps(dict_result)))
@@ -190,8 +226,7 @@ def faro_execute(params):
             f_out.write("{}\n".format(json.dumps(dict_result)))
 
     else:
-        dump_keys_list = config["sensitivy_keys_dump"]
-
+        dump_keys_list = config["sensitivity_keys_dump"]
         panda_dict = OrderedDict()
         panda_dict["id_file"] = params.input_file
         panda_dict["score"] = dict_result["score"]
@@ -208,5 +243,7 @@ def faro_execute(params):
                 else:
                     panda_dict[_key] = 0
 
+        panda_dict["content-type"] = content_type
+        
         df = pd.DataFrame(panda_dict, index=[0])
         print(df.to_csv(header="False", index=False).split("\n")[1])

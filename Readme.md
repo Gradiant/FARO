@@ -13,7 +13,8 @@
      * [Installation of dependencies](#dependencies)
      * [Downloading the models](#modelsdownload) 
  * [Run FARO](#runtheproject)
- * [Test FARO on a single file](#singletest)
+ * [Run FARO on a single file](#singletest)
+ * [Run FARO with Docker](#docker)
  * [Technical Details](#technicaldetails)
      * [What’s in here](#whatisinhere)
      * [FARO entity detector](#faroentitydetectorintro)
@@ -128,7 +129,7 @@ detection:
 
 The spiders are scripts to recursively analyse the documents inside a folder, storing the results of the analysis on a file.
 
-Note: due to the requirement of GNU parallel this only works in Linux and Mac OS, for Windows we do not use paralelization.
+Note: due to the requirement of GNU parallel this only works in Linux and Mac OS, for Windows we do not use parallelization.
 
 ### FARO spider
 
@@ -222,6 +223,41 @@ With --dump the system dumps the information of <your_file>.score to stdout in c
 There is an additional parameter (--split_lines) that must be used with documents in which every line of the document is a sentence (or paragraph). By default, F@RO tries to join lines in the document because in many cases a different line does not imply a different sentence (e.g. in PDFs).
 
 
+## Run FARO with Docker <a name="docker"></a>
+
+FARO can run as a standalone container using Docker. You can build the image for yourself. Soon, we will also make FARO available in Docker Hub.
+
+### Build FARO image
+
+Provided you have Docker installed on your system, do the following to build the FARO image.
+
+#### Linux and Mac OS
+
+```
+./docker_build_faro.sh
+```
+
+#### Windows
+
+```
+docker_build_faro.bat
+```
+
+### Run FARO container
+
+To run the FARO container some scripts are provided within the "scripts" folder in the root of the project. You can copy and use those scripts from anywhere else for convenience. The "output" folder will be created under your current directory.
+
+#### Linux and Mac OS
+
+```
+./docker_run_faro.sh <your folder with files>
+```
+
+#### Windows
+
+```
+./docker_run_faro.bat <your folder with files>
+```
 
 ## Technical Details <a name="technicaldetails"></a>
 
@@ -318,12 +354,20 @@ sensitivity:
 
 * sensitivity_multiple_kpis this number indicates the simultaneous number of scores in a level allowed before leveling up the sensitivy score
 
-* sensitivity is a dict with the sensitivity conditions that must be satisified in order to reach a sensitivity level.
+* sensitivity is a dict with the sensitivity conditions that must be satisfied in order to reach a sensitivity level.
 
 
 ### Input Formats <a name="inputformats"></a>
 
 The FARO application uses Tika for document processing. Therefore all the formats that Tika process can be used as input. Nevertheless, the faro_spider.sh/faro_spider.bat scripts for bulk processing are restricted to the following extensions: .doc, .docx, .pptx, .ppt, .xls, .pdf, .odt, .ods, .odp, .txt and .rtf.
+
+### Running Tests <a name="runningtests"></a>
+
+FARO has several tests to verify the functionality of the system (currently the tests only cover the regular expressions). Tests can be executed with the following command:
+
+```
+python test_suite.py
+```
 
 ### Techniques <a name="techniques"></a>
 

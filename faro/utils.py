@@ -1,4 +1,39 @@
+import re
 import gensim.utils as gensim_utils
+
+
+def normalize_text_proximity(message):
+    """ Clean text of dots between words
+    
+    Keyword arguments:
+    message -- a plain sentence or paragraph
+
+    """
+
+    sent = message.lower()
+    sent = sent.replace("á", "a")
+    sent = sent.replace("é", "e")
+    sent = sent.replace("í", "i")
+    sent = sent.replace("ó", "o")
+    sent = sent.replace("ú", "u")
+    sent = re.sub(r'(?i)(?<=[a-z])\.(?=[a-z])', "", sent)
+
+    return sent
+
+
+def clean_text(message):
+    """ Delete extra characters from text before validation
+    
+    Keyword arguments:
+    message -- a plain sentence or paragraph
+
+    """
+
+    sent = re.sub(r'[\-_*+,\(\).:]{1,}', "", message)
+    sent = re.sub(r'[ ]{1,}', "", sent)
+    sent = re.sub(r'(?i)\bnº', "", sent)
+
+    return sent
 
 
 def preprocess_text(message):
