@@ -245,7 +245,7 @@ docker_build_faro.bat
 
 ### Run FARO container
 
-To run the FARO container some scripts are provided within the "scripts" folder in the root of the project. You can copy and use those scripts from anywhere else for convenience. The "output" folder will be created under your current directory.
+To run the FARO container some scripts are provided within the **scripts** folder in the root of the project. You can copy and use those scripts from anywhere else for convenience. The "output" folder will be created under your current directory.
 
 #### Linux and Mac OS
 
