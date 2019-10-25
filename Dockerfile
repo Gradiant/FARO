@@ -1,6 +1,9 @@
 FROM alpine:edge
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \ 
-    apk add --no-cache make automake gcc g++ subversion python3-dev bash parallel openjdk8-jre python3 py3-scipy py3-pandas py3-scikit-learn
+    apk add --no-cache make automake gcc g++ subversion python3-dev bash parallel openjdk8-jre python3 openblas openblas-dev musl-dev
+   
+RUN pip3 install cython numpy==1.16.4
+
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN mkdir -p /opt/faro
 COPY . /opt/faro
