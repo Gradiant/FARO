@@ -3,3 +3,4 @@
 *flymake*
 data/*
 *.orig
+*.log
