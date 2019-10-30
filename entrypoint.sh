@@ -3,8 +3,6 @@
 PREFFIX=$(echo $2 | sed -e 's/\\/\\\\/g; s/\//\\\//g; s/&/\\\&/g')
 SUFFIX=$(date "+%Y.%m.%d-%H.%M.%S")
 
-nohup java -jar /tmp/tika-server.jar -h 0.0.0.0 > /dev/null 2>&1 &
-
 ./faro_spider.sh $1 $SUFFIX
 
 if [ -z "$3" ]
