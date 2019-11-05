@@ -32,7 +32,7 @@ FARO (Document Sensitivity Detector)
 FARO is a tool for detecting sensitive information in documents in an organization. It is oriented to be used by small companies and particulars that want to track their sensitive documents inside their organization but who cannot spend much time and money configuring complex Data Protection tools.
 
 
-FARO extract sensitivity indicators from documents (e.g. Document IDs, monetary quantities, personal emails) and gives a senstivity score to the document (from low to high) using the frequence and type of the indicators in the document.
+FARO extract sensitivity indicators from documents (e.g. Document IDs, monetary quantities, personal emails) and gives a sensitivity score to the document (from low to high) using the frequence and type of the indicators in the document.
 
 Currently all the functionality of this tool is for documents written in Spanish although it can be easily upgraded to cover more languages.
 
@@ -44,14 +44,14 @@ The project contains the following folders:
 
  * `faro/` : this is FARO module with the main functionality.
  * `config/`: yaml configuration files go here. There is one yaml file per language (plus one `nolanguage.yaml` to provide basic functionality for non detected languages) and one yaml file with common configurations for all languages `config/commons.yaml`.
- * `models/`: this is the folder to place your models.
+ * `models/`: this is the folder to place FARO models.
  * `faro_detection.py`: launcher of FARO for standalone operation over a single file.
  * `faro_spider.sh`: script for bulk processing.
- * `docker_build_faro.sh`: script for building FARO docker image in Linux and Mac OS.
- * `docker_build_faro.bat`: script for building FARO docker image in Windows.
- * `docker_run_faro.sh`: script for running a FARO container in Linux and Mac OS.
- * `docker_run_faro.bat`: script for running a FARO container in Windows.
- * `log4j.properties`: tweak tika server logging to avoid excesive verbosity, mainly coming from PDFBox.
+ * `docker_build_faro.sh`: script for building FARO docker image on Linux and Mac OS.
+ * `docker_build_faro.bat`: script for building FARO docker image on Windows.
+ * `docker_run_faro.sh`: script for running a FARO container on Linux and Mac OS.
+ * `docker_run_faro.bat`: script for running a FARO container on Windows.
+ * `log4j.properties`: tweak Tika server logging to avoid excessive verbosity, mainly coming from PDFBox.
  * `CHANGELOG`: FARO changelog.
 
 ## Run FARO with Docker
@@ -361,7 +361,7 @@ Download the package in https://git-lfs.github.com/ and follow the installation 
 
 #### Windows
 
-Install "git bash" in Windows (check the windows section in this link https://git-scm.com/downloads) and afterwards visit https://git-lfs.github.com/ and follow the installation instructions.
+Install "git bash" on Windows (check the Windows section in this link https://git-scm.com/downloads) and afterwards visit https://git-lfs.github.com/ and follow the installation instructions.
 
 #### Mac OS
 
