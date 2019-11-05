@@ -1,0 +1,12 @@
+1.0.1
+-----
+
+* Add Docker support
+* Fix path with spaces issue
+* Fix sensitivy information patterns and redesign two phase approach
+* Add more contextual validations
+
+1.0.0
+-----
+
+* Initial release.
