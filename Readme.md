@@ -34,11 +34,49 @@ FARO extract sensitivity indicators from documents (e.g. Document IDs, monetary 
 Currently all the functionality of this tool is for documents written in Spanish although it can be easily upgraded to cover more languages.
 
 
-
-
 ## Install FARO <a name="installation"></a>
 
-### Prerequisites <a name="prerequisites"></a>
+The preferred way to use FARO is through its Docker image. Developers and testers can however set up the appropriate environment to run FARO from source code (see next sections).
+
+### FARO with Docker <a name="docker"></a>
+
+FARO can run as a standalone container using Docker. You can build the image for yourself. Soon, we will also make FARO available in Docker Hub.
+
+#### Build FARO image
+
+Provided you have Docker installed and running on your system, do the following to build the FARO image.
+
+Linux and Mac OS
+
+```
+./docker_build_faro.sh
+```
+
+Windows
+
+```
+docker_build_faro.bat
+```
+
+#### Run FARO container
+
+To run a FARO container some scripts are provided in the root of the project. You can copy and use those scripts from anywhere else for convenience. The "output" folder will be created under your current directory.
+
+Linux and Mac OS
+
+```
+./docker_run_faro.sh <your folder with files>
+```
+
+Windows
+
+```
+./docker_run_faro.bat <your folder with files>
+```
+
+### Install FARO (for developers)
+
+#### Prerequisites <a name="prerequisites"></a>
 
 The mode requires some operative system and libraries in order to work properly
 
@@ -48,7 +86,7 @@ The mode requires some operative system and libraries in order to work properly
  * GNU parallel (to execute the bash spider scripts in Linux and Mac OS. You can see more information about the tool in the following <a href="https://zenodo.org/record/1146014#.XSXolp9fjCJ" target="GNU parallel">link</a>;
  * git lfs installed. Check [Downloading models](#modelsdownload) for specific instructions for your operative system.
 
-### Using a virtual environment <a name="virtualenvironment"></a>
+#### Using a virtual environment <a name="virtualenvironment"></a>
 
 It is advisable to use a separate virtual environment. To instantiate a virtual environment with virtualenv.
 
@@ -62,7 +100,7 @@ To activate the virtual environment on your terminal just type:
 source <yourenvname>/bin/activate
 ```
 
-### Dependencies: <a name="dependencies"></a>
+#### Dependencies: <a name="dependencies"></a>
 
 The easiest way of getting the system up and running is to install the dependencies this way
 
@@ -88,9 +126,9 @@ These other dependencies are used for testing:
 * mox
 * unittest-xml-reporting
 
-### NER models <a name="modelsdownload"></a>
+### Downloading the models <a name="modelsdownload"></a>
 
-FARO relies on several ML models in order to work. Models are tracked with github LFS. You must install the package in order to download the models.
+FARO relies on several ML models in order to work. Models are tracked with Git LFS. Installing this tool is the easiest way to download the models.
 
 #### Linux
 
@@ -129,8 +167,6 @@ detection:
 
 The spiders are scripts to recursively analyse the documents inside a folder, storing the results of the analysis on a file.
 
-Note: due to the requirement of GNU parallel this only works in Linux and Mac OS, for Windows we do not use parallelization.
-
 ### FARO spider
 
 Example of execution (Linux and Mac OS)
@@ -141,9 +177,7 @@ Example of execution (Linux and Mac OS)
 
 Execution on Windows
 
-```
-./faro_spider.bat <your folder with files>
-```
+Currently, processing multiple documents in Windows is only available through dockerized FARO (see below).
 
 The script creates an "output" folder in the root of the project and stores the results of the execution in two files:
 
@@ -222,43 +256,6 @@ With --dump the system dumps the information of <your_file>.score to stdout in c
 
 There is an additional parameter (--split_lines) that must be used with documents in which every line of the document is a sentence (or paragraph). By default, F@RO tries to join lines in the document because in many cases a different line does not imply a different sentence (e.g. in PDFs).
 
-
-## Run FARO with Docker <a name="docker"></a>
-
-FARO can run as a standalone container using Docker. You can build the image for yourself. Soon, we will also make FARO available in Docker Hub.
-
-### Build FARO image
-
-Provided you have Docker installed on your system, do the following to build the FARO image.
-
-#### Linux and Mac OS
-
-```
-./docker_build_faro.sh
-```
-
-#### Windows
-
-```
-docker_build_faro.bat
-```
-
-### Run FARO container
-
-To run the FARO container some scripts are provided within the **scripts** folder in the root of the project. You can copy and use those scripts from anywhere else for convenience. The "output" folder will be created under your current directory.
-
-#### Linux and Mac OS
-
-```
-./docker_run_faro.sh <your folder with files>
-```
-
-#### Windows
-
-```
-./docker_run_faro.bat <your folder with files>
-```
-
 ## Technical Details <a name="technicaldetails"></a>
 
 ### What’s in here <a name="whatisinhere"></a>
@@ -270,7 +267,10 @@ The project contains the following folders:
  * **models/**: this is the folder to place your models. Any other folder is ok whilst the yaml configuration files points to the right locations of the models.
  * **faro_detection.py**: launcher of FARO for standalone operation (testing one file)
  * **faro_spider.sh**: script for bulk processing in Mac OS and Linux
- * **faro_spider.bat**; script for bulk processing in Windows.
+ * **docker_build_faro.sh**: script for building FARO docker image in Linux and Mac OS
+ * **docker_build_faro.bat**: script for building FARO docker image in Windows
+ * **docker_run_faro.sh**: script for running a FARO container in Linux and Mac OS
+ * **docker_run_faro.bat**: script for running a FARO container in Windows
 
 
 ### FARO entity detector <a name="faroentitydetectorintro"></a>
