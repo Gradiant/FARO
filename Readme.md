@@ -36,11 +36,7 @@ FARO extract sensitivity indicators from documents (e.g. Document IDs, monetary 
 
 Currently all the functionality of this tool is for documents written in Spanish although it can be easily upgraded to cover more languages.
 
-This tool is developed by TEGRA R&D Cybersecurity Center.
-
-TEGRA is an R&D Cybersecurity Center based in Galicia (Spain). It is a joint effort from Telefónica, a leading international telecommunications company, through ElevenPaths, its global cybersecurity unit, and Gradiant, an ICT R&D center with more than 100 professionals working in areas like connectivity, security and intelligence, to create innovative products and services inside cybersecurity.
-
-TEGRA's work is focused on two areas within the cybersecurity landscape: Data Security and Security Analytics. We are committed to creating state-of-the-art technologies that can nurture and thus provide differentiating value to our products.
+This tool is developed by [TEGRA R&D Cybersecurity Center](#contributors).
 
 ## What’s in here?
 
@@ -189,8 +185,6 @@ detection:
 ```
 
 In our repository we are handling models through Git LFS due to their size. If you have [git-lfs](https://git-lfs.github.com/) installed you should automatically have the models downloaded when you first clone our repo.
-
-To install
 
 If you want to download models manually execute the following command from the root of the project.
 ```
@@ -385,5 +379,9 @@ A `models` folder will be created with all the models inside.
 * The system uses SpaCy for parsing and PoS sentence preprocessing. Although the SpaCy provides a trained NER system for classical entities, custom NERs are used for the extraction of classical entities (Person, Organization, Localization) and the Professions/job position.
 
 ## Contributors
+
+TEGRA is an R&D Cybersecurity Center based in Galicia (Spain). It is a joint effort from Telefónica, a leading international telecommunications company, through ElevenPaths, its global cybersecurity unit, and Gradiant, an ICT R&D center with more than 100 professionals working in areas like connectivity, security and intelligence, to create innovative products and services inside cybersecurity.
+
+TEGRA's work is focused on two areas within the cybersecurity landscape: Data Security and Security Analytics. We are committed to creating state-of-the-art technologies that can nurture and thus provide differentiating value to our products.
 
 See the [CONTRIBUTORS](CONTRIBUTORS) file.
