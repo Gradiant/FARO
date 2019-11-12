@@ -9,11 +9,12 @@ import pandas as pd
 from collections import OrderedDict
 import gensim.utils as gensim_utils
 from langdetect import detect, DetectorFactory
-from faro.detector import Detector
-from faro.sensitivity_score import Sensitivity_Scorer
+from .detector import Detector
+from .sensitivity_score import Sensitivity_Scorer
 from joblib import load
 from .io_parser import parse_file
 from .utils import preprocess_text, normalize_text_proximity
+from .docprofiler import DocProfiler
 
 # init the seeed of the lang detection algorithm
 DetectorFactory.seed = 0
@@ -178,6 +179,10 @@ def faro_execute(params):
     # instantiate detector with current configuration
     my_detector = init_detector(config)
 
+    # profile detector to extract the class of a document
+    profile_detector = DocProfiler(config["docprofiling_profile_path"],
+                                   config["docprofiling_class_translation"])
+
     logger.info("Analysing {}".format(params.input_file))
     accepted_entity_dict = my_detector.analyse(file_lines)
 
@@ -220,8 +225,10 @@ def faro_execute(params):
     
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
+    doc_class = profile_detector.detect("\n".join(file_lines))
     # Adding metadata of fyle type to output
     dict_result["content-type"] = content_type
+    dict_result["doc-class"] = doc_class
     
     # dump the score to file or stdout (if dump flag is activated)
     logging.debug("JSON (Entities detected) {}".format(
@@ -251,6 +258,7 @@ def faro_execute(params):
                     panda_dict[_key] = 0
 
         panda_dict["content-type"] = content_type
+        panda_dict["doc-class"] = doc_class
         
         df = pd.DataFrame(panda_dict, index=[0])
         print(df.to_csv(header="False", index=False).split("\n")[1])

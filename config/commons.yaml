@@ -146,3 +146,12 @@ sensitivity:
             min: 65535
             max: 65535
 
+
+docprofiling_profile_path: models/doc_profile
+
+docprofiling_class_translation:
+    bo: administration
+    le: legal
+    wi: none
+
+
