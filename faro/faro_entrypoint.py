@@ -12,8 +12,9 @@ from langdetect import detect, DetectorFactory
 from faro.detector import Detector
 from faro.sensitivity_score import Sensitivity_Scorer
 from joblib import load
-from .io_parser import parse_file
-from .utils import preprocess_text, normalize_text_proximity
+from .utils import normalize_text_proximity
+from .metadata_utils import FARO_Document
+
 
 # init the seeed of the lang detection algorithm
 DetectorFactory.seed = 0
@@ -129,44 +130,20 @@ def faro_execute(params):
 
     logger.debug("OUTPUTENTITYFILE {}".format(output_entity_file))
 
-    # parse input file and join sentences if requested
-    file_lines, metadata = parse_file(input_file)
-    file_lines = file_lines.split("\n")
-
-    if isinstance(metadata["Content-Type"], list):
-        content_type = str(metadata["Content-Type"][0])
-    else:
-        content_type = metadata["Content-Type"]
-
-    new_file_lines = []
-    for line in file_lines:
-        if not params.split_lines:
-            if len(line.strip("")) == 0 or len(new_file_lines) == 0:
-                new_file_lines.append(preprocess_text(line))
-
-            else:
-                new_file_lines[-1] = "{} {}".format(new_file_lines[-1],
-                                                    preprocess_text(line))
-        else:
-            new_file_lines.append(preprocess_text(line))
-
-    file_lines = new_file_lines
-
-    # detect language of file
-    lang = detect(" ".join(file_lines))
-
+    faro_doc = FARO_Document(input_file, params.split_lines)
+    
     # reading commons configuration
     with open(_COMMONS_YAML, "r") as f_stream:
         commons_config = yaml.load(f_stream, Loader=yaml.FullLoader)
 
-    if lang in ACCEPTED_LANGS:
-        with open("config/" + lang + ".yaml", "r") as stream:
+    if faro_doc.lang in ACCEPTED_LANGS:
+        with open("config/" + faro_doc.lang + ".yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
 
     else:
         logger.debug(("Language {} is not fully supported. All the " +
                       "functionality is only implemented for these languages: {}").format(
-                          lang,
+                          faro_doc.lang,
                           " ".join(ACCEPTED_LANGS)))
 
         with open("config/nolanguage.yaml", "r") as stream:
@@ -179,7 +156,7 @@ def faro_execute(params):
     my_detector = init_detector(config)
 
     logger.info("Analysing {}".format(params.input_file))
-    accepted_entity_dict = my_detector.analyse(file_lines)
+    accepted_entity_dict = my_detector.analyse(faro_doc.file_lines)
 
     # TODO: translate dictionary keys to build a coherent tool
     with io.open(output_entity_file, "a+") as f_out:
@@ -210,7 +187,7 @@ def faro_execute(params):
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
                            "datetime": st,
-                           "Content-Type": content_type}
+                           "Content-Type": faro_doc.content_type}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
     # score the document, given the extracted entities
@@ -221,7 +198,7 @@ def faro_execute(params):
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
     # Adding metadata of fyle type to output
-    dict_result["content-type"] = content_type
+    dict_result["content-type"] = faro_doc.content_type
     
     # dump the score to file or stdout (if dump flag is activated)
     logging.debug("JSON (Entities detected) {}".format(
@@ -244,13 +221,13 @@ def faro_execute(params):
 
             else:
                 if (_key == "person_position_organization" and
-                        lang not in ACCEPTED_LANGS):
+                        faro_doc.lang not in ACCEPTED_LANGS):
 
                     panda_dict[_key] = None
                 else:
                     panda_dict[_key] = 0
 
-        panda_dict["content-type"] = content_type
+        panda_dict["content-type"] = faro_doc.content_type
         
         df = pd.DataFrame(panda_dict, index=[0])
         print(df.to_csv(header="False", index=False).split("\n")[1])
