@@ -17,7 +17,8 @@ RUN mkdir -p /usr/share/man/man1 && \
     pip3 install --upgrade pip && \
     pip3 install /python_Levenshtein-0.12.0-cp37-cp37m-linux_x86_64.whl /regex-2019.8.19-cp37-cp37m-linux_x86_64.whl && \
     pip3 install -r /requirements.txt && \
-    apt-get update && apt-get install -y openjdk-11-jre-headless parallel bash wget && rm -rf /var/lib/apt/lists/* && \
+    apt-get update && apt-get install -y openjdk-11-jre-headless parallel bash wget \
+    tesseract-ocr tesseract-ocr-spa && rm -rf /var/lib/apt/lists/* && \
     wget -O /tmp/tika-server.jar https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.21/tika-server-1.21.jar
 
 COPY . /opt/faro
