@@ -10,7 +10,7 @@ PyYAML==5.1.1
 scikit-learn==0.21.2
 sklearn-crfsuite==0.3.6
 python-dateutil==2.8.0
-tika==1.19
+tika==1.22
 unittest-xml-reporting==2.5.1
 luhn==0.2.0
 python-stdnum==1.11
