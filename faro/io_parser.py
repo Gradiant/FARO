@@ -1,5 +1,5 @@
 import os
-os.environ['TIKA_SERVER_JAR'] = "https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.21/tika-server-1.21.jar"
+os.environ['TIKA_SERVER_JAR'] = "https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.22/tika-server-1.22.jar"
 import tika
 from tika import parser
 
