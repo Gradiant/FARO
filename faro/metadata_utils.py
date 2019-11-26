@@ -95,8 +95,3 @@ class FARO_Document(object):
 
         # store the document path
         self.document_path = document_path
-        
-
-
-    
-    

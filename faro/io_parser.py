@@ -12,5 +12,10 @@ def parse_file(file_path):
 
     """
 
-    parsed = parser.from_file(file_path)
+    parsed = parser.from_file(file_path, xmlContent=True)
+
+    # FIXME tika-python does not work well with some formats with xml output (e.g. rtf)
+    if parsed is None:
+        parsed = parser.from_file(file_path)
+    
     return parsed['content'], parsed['metadata']
