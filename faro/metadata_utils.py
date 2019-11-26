@@ -71,7 +71,9 @@ class FARO_Document(object):
         """
         
         # parse input file and join sentences if requested
-        file_lines, metadata = parse_file(document_path)
+        file_lines, file_tag_list, metadata = parse_file(document_path)
+
+        """
         if file_lines is not None:
             file_lines = file_lines.split("\n")
         else:
@@ -90,6 +92,10 @@ class FARO_Document(object):
                 new_file_lines.append(preprocess_text(line))
 
         self.file_lines = new_file_lines
+
+        """
+        self.file_lines = file_lines
+        self.file_tag_list = file_tag_list
 
         self._get_document_metadata(metadata)
 
