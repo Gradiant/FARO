@@ -2,7 +2,6 @@ import re
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
 from .io_parser import parse_file
-from .utils import preprocess_text
 
 
 class FARO_Document(object):
@@ -73,27 +72,6 @@ class FARO_Document(object):
         # parse input file and join sentences if requested
         file_lines, file_tag_list, metadata = parse_file(document_path)
 
-        """
-        if file_lines is not None:
-            file_lines = file_lines.split("\n")
-        else:
-            file_lines = []
-            
-        new_file_lines = []
-        for line in file_lines:
-            if not split_lines:
-                if len(line.strip("")) == 0 or len(new_file_lines) == 0:
-                    new_file_lines.append(preprocess_text(line))
-
-                else:
-                    new_file_lines[-1] = "{} {}".format(new_file_lines[-1],
-                                                        preprocess_text(line))
-            else:
-                new_file_lines.append(preprocess_text(line))
-
-        self.file_lines = new_file_lines
-
-        """
         self.file_lines = file_lines
         self.file_tag_list = file_tag_list
 
