@@ -1,3 +1,4 @@
+import re
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
 from .io_parser import parse_file
@@ -5,7 +6,14 @@ from .utils import preprocess_text
 
 
 class FARO_Document(object):
-    """ Class to store information of the faro documents in an homogeneous format """
+    """ Class to store information of the faro documents in an homogeneous format
+
+    The current information per document is:
+    - lang -- language detected
+    - num_of_pages -- number of pages in the document
+    - content_type -- type of content of the document
+
+    """
 
     def _get_document_metadata(self, metadata):
         """ Extract relevant document metadata from a tika metadata dict
@@ -39,6 +47,13 @@ class FARO_Document(object):
 
         if "language" in metadata:
             self.lang = metadata["language"]
+
+        # get the number of words/chars in the document
+        self.num_words = 0
+        self.num_chars = 0
+        for line in self.file_lines:
+            self.num_words += len(re.sub("[^\w]", " ",  line).split())
+            self.num_chars += len(line)
             
         # detect language of file with langdetect (overwrite the tika detection)
         try:

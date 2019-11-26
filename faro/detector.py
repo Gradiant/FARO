@@ -226,9 +226,7 @@ class Detector(object):
         """
 
         total_ent_list = self._get_kpis(sent_list)
-
         total_ent_list = self._discard_nonunique_kpis(total_ent_list)
-        
         unique_ent_dict = self._get_unique_ents(total_ent_list)
 
         return unique_ent_dict
