@@ -59,6 +59,28 @@ class FARO_Document(object):
             self.lang = detect(" ".join(self.file_lines))
         except LangDetectException:
             self.lang = "unk"
+
+        # get the number of paragraphs and the number of words pere paragraph
+        self.num_of_paragraphs = self.file_tag_list.count("paragraph")
+        self.num_of_tables = self.file_tag_list.count("table")
+
+        words_in_paragraph = 0
+        for tag, line in zip(self.file_tag_list, self.file_lines):
+            if tag == "paragraph":
+                words_in_paragraph += len(re.sub("[^\w]", " ",  line).split())
+
+        self.mean_words_in_paragraph = (
+            words_in_paragraph/self.num_of_paragraphs
+            if self.num_of_paragraphs > 0 else 0)
+                
+        words_in_table = 0
+        for tag, line in zip(self.file_tag_list, self.file_lines):
+            if tag == "table":
+                words_in_table += len(re.sub("[^\w]", " ",  line).split())
+
+        self.mean_words_in_table = (
+            words_in_table/self.num_of_tables if self.num_of_tables > 0
+            else 0)
                     
     def __init__(self, document_path, split_lines):
         """ Initialization

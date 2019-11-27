@@ -93,7 +93,7 @@ def get_augmented_content(parsed_content, file_path):
             if _elem.tag.endswith("body"):
                 tag_list, text_list = get_text_and_tag(_elem, [], [])
                 break
-
+            
         logger.info("TAG_LIST {}".format(tag_list))
 
     except ParseError:
