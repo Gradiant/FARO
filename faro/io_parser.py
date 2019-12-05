@@ -23,6 +23,8 @@ def parse_file(file_path):
         try:
             if any('TesseractOCRParser' in s for s in parsed['metadata']['X-Parsed-By']):
                 # OCR already executed, return
+                parsed['metadata']['ocr_parsing'] = True
+                
                 return parsed['content'], parsed['metadata']
             if parsed['metadata']['Content-Type'] == 'application/pdf':
                 # Determine whether or not to run OCR based on the following variables
@@ -46,6 +48,9 @@ def parse_file(file_path):
                         parsed_ocr_text = parser.from_file(file_path,
                                                            headers={'X-Tika-PDFOcrStrategy':
                                                                     'ocr_only'})
+                        
+                        parsed['metadata']['ocr_parsing'] = True
+                    
                         if parsed['content'] is None:
                             parsed['content'] = parsed_ocr_text['content']
                         else:

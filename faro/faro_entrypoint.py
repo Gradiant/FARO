@@ -167,8 +167,9 @@ def faro_execute(params):
 
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
-                           "datetime": st,
-                           "Content-Type": faro_doc.content_type}
+                           "datetime": st}
+            entity_dict = {**entity_dict, **faro_doc.get_metadata_dict()}
+                   
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
         else:
@@ -184,8 +185,9 @@ def faro_execute(params):
 
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
-                           "datetime": st,
-                           "Content-Type": faro_doc.content_type}
+                           "datetime": st}
+
+            entity_dict = {**entity_dict, **faro_doc.get_metadata_dict()}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
     # score the document, given the extracted entities
@@ -196,7 +198,8 @@ def faro_execute(params):
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
     # Adding metadata of fyle type to output
-    dict_result["content-type"] = faro_doc.content_type
+
+    dict_result.update(faro_doc.get_metadata_dict())
 
     # dump the score to file or stdout (if dump flag is activated)
     logging.debug("JSON (Entities detected) {}".format(
@@ -225,7 +228,7 @@ def faro_execute(params):
                 else:
                     panda_dict[_key] = 0
 
-        panda_dict["content-type"] = faro_doc.content_type
-
+        panda_dict.update(faro_doc.get_metadata_dict())
+                    
         df = pd.DataFrame(panda_dict, index=[0])
         print(df.to_csv(header="False", index=False).split("\n")[1])
