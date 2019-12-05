@@ -3,16 +3,20 @@ os.environ['TIKA_SERVER_JAR'] = "https://repo1.maven.org/maven2/org/apache/tika/
 import tika
 import logging
 from tika import parser
+from statistics import mean
 
 logger = logging.getLogger(__name__)
 
 
-def parse_file(file_path):
+def parse_file(file_path, threshold_chars_per_page=100,
+               threshold_filesize_per_page=30000):
     """ Parses a file and returns the list of sentences
 
     Keyword arguments:
     file_path -- path to file
-
+    threshold_chars_per_page -- maximum chars per page in order to not apply OCR
+    threshold_filesize_per_page -- maximum filesize per page in order to not apply OCR
+    
     """
     parsed = {'content': None, 'metadata': None}
     parsed.update(parser.from_file(file_path))
@@ -32,17 +36,20 @@ def parse_file(file_path):
                 #   - Use number of pages (xmpTPg:NPages)
                 #   - Use chars per page (pdf:charsPerPage)
                 if isinstance(parsed['metadata']['pdf:charsPerPage'], list):
-                    charsperpage = int(parsed['metadata']['pdf:charsPerPage'][0])
+                    charsperpage = mean(
+                        [int(chars_in_page) for chars_in_page in
+                         parsed['metadata']['pdf:charsPerPage']])
                 else:
                     charsperpage = int(parsed['metadata']['pdf:charsPerPage'])
-                if charsperpage <= 100:
+                    
+                if charsperpage <= threshold_chars_per_page:
                     filesize = os.path.getsize(file_path)
                     npages = int(parsed['metadata']['xmpTPg:NPages'])
                     filesizeperpage = filesize / npages
-                    # If in average we have less than 100 chars per page
+                    # If in average we have less than threshold chars per page
                     # and the average filesize per page is greater 500KB
                     # run OCR and append to content
-                    if filesizeperpage >= 500000:
+                    if filesizeperpage >= threshold_filesize_per_page:
                         # TODO: Grab only content if tika-python merges our PR
                         logger.info("File is big but did not get much content...running OCR")
                         parsed_ocr_text = parser.from_file(file_path,

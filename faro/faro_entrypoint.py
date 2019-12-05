@@ -112,6 +112,10 @@ def translate_dict(entity_dict, config):
 def faro_execute(params):
     """ Execution of the main loop """
 
+    # reading commons configuration
+    with open(_COMMONS_YAML, "r") as f_stream:
+        commons_config = yaml.load(f_stream, Loader=yaml.FullLoader)
+
     # choose the input/output file
     input_file = params.input_file
     if params.output_score_file is None:
@@ -128,13 +132,11 @@ def faro_execute(params):
     
     # parse input file and join sentences if requested
     logger.info("Analysing {}".format(params.input_file))
-
-    faro_doc = FARO_Document(input_file, params.split_lines)
-
-    # reading commons configuration
-    with open(_COMMONS_YAML, "r") as f_stream:
-        commons_config = yaml.load(f_stream, Loader=yaml.FullLoader)
-
+    
+    faro_doc = FARO_Document(input_file, params.split_lines,
+                             commons_config["threshold_chars_per_page"],
+                             commons_config["threshold_filesize_per_page"])
+    
     if faro_doc.lang in ACCEPTED_LANGS:
         with open("config/" + faro_doc.lang + ".yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
