@@ -48,7 +48,7 @@ class FARO_Document(object):
 
         """
 
-        logger.info("METADATA DICT {}".format(metadata))
+        # logger.info("METADATA DICT {}".format(metadata))
         
         # extract content type
         if isinstance(metadata["Content-Type"], list):
@@ -132,6 +132,10 @@ class FARO_Document(object):
         
         try:
             self.lang = detect(" ".join(self.file_lines))
+
+            logger.info("LANG {}".format(self.lang))
+            
+            
         except LangDetectException:
             self.lang = "unk"
             
@@ -144,7 +148,7 @@ class FARO_Document(object):
 
         """
 
-        if file_lines:
+        if file_lines is not None:
             file_lines = file_lines.strip().split("\n")
         else:
             file_lines = []
@@ -178,8 +182,6 @@ class FARO_Document(object):
         file_lines, metadata = parse_file(document_path)
 
         self.file_lines = self._preprocess_file_lines(file_lines, split_lines)
-
-        self.file_lines = file_lines
         self._get_document_metadata(metadata)
 
         # store the document path
