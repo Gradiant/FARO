@@ -166,17 +166,22 @@ class FARO_Document(object):
 
         return file_lines
             
-    def __init__(self, document_path, split_lines):
+    def __init__(self, document_path, split_lines,
+                 threshold_chars_per_page, threshold_filesize_per_page):
         """ Initialization
         
         Keyword arguments:
         document_path -- path to the document
         split_lines -- wether to split lines or not
+        threshold_chars_per_page -- maximum chars per page in order to not apply OCR
+        threshold_filesize_per_page -- maximum filesize per page in order to not apply OCR
 
         """
         
         # parse input file and join sentences if requested
-        file_lines, metadata = parse_file(document_path)
+        file_lines, metadata = parse_file(document_path,
+                                          threshold_chars_per_page,
+                                          threshold_filesize_per_page)
 
         self.file_lines = self._preprocess_file_lines(file_lines, split_lines)
         self._get_document_metadata(metadata)
