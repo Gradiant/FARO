@@ -136,7 +136,7 @@ def faro_execute(params):
         commons_config = yaml.load(f_stream, Loader=yaml.FullLoader)
 
     if faro_doc.lang in ACCEPTED_LANGS:
-        with open("config/" + lang + ".yaml", "r") as stream:
+        with open("config/" + faro_doc.lang + ".yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
 
     else:
