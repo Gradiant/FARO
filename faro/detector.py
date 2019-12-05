@@ -21,7 +21,7 @@ from .utils import clean_text
 from .custom_word import Custom_Word_Detector
 from stdnum import get_cc_module
 from stdnum.luhn import validate
-from stdnum.exceptions import InvalidChecksum
+from stdnum.exceptions import InvalidChecksum, InvalidFormat
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class Detector(object):
                                                        str(ent[2] + offset),
                                                        str(ent[3] + offset)))
 
-                        except InvalidChecksum:
+                        except (InvalidChecksum, InvalidFormat):
                             logger.debug("Wrong credit card {}.{}.".format(
                                 sent, ent[0]))
 
