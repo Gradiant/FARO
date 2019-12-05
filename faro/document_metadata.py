@@ -132,9 +132,6 @@ class FARO_Document(object):
         
         try:
             self.lang = detect(" ".join(self.file_lines))
-
-            logger.info("LANG {}".format(self.lang))
-            
             
         except LangDetectException:
             self.lang = "unk"
