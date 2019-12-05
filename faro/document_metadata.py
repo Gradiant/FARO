@@ -4,6 +4,7 @@ from langdetect import detect, DetectorFactory
 from langdetect.lang_detect_exception import LangDetectException
 from .utils import preprocess_text
 from .io_parser import parse_file
+from collections import OrderedDict
 
 # init the seeed of the lang detection algorithm
 DetectorFactory.seed = 0
@@ -21,6 +22,24 @@ class FARO_Document(object):
 
     """
 
+    def get_metadata_dict(self):
+        """ Extract a dictionary with metadata"""
+        
+        dict_result = OrderedDict()
+
+        # Adding metadata of fyle type to output
+        dict_result["meta:content-type"] = self.content_type
+        dict_result["meta:author"] = self.author
+        dict_result["meta:pages"] = self.num_of_pages
+        dict_result["meta:lang"] = self.lang
+        dict_result["meta:date"] = self.creation_date
+        dict_result["meta:num_words"] = self.num_words
+        dict_result["meta:num_chars"] = self.num_chars
+        dict_result["meta:tika_parser"] = self.main_tika_parser
+        dict_result["meta:ocr"] = self.ocr_parsing
+    
+        return dict_result
+    
     def _get_document_metadata(self, metadata):
         """ Extract relevant document metadata from a tika metadata dict
 
@@ -38,7 +57,7 @@ class FARO_Document(object):
             self.content_type = metadata["Content-Type"]
 
         # pick author
-        self.author = "Unknown"
+        self.author = None
         if "Author" in metadata:
             self.author = metadata["Author"]
 
@@ -73,10 +92,31 @@ class FARO_Document(object):
         else:
             # not supported yet (we consider the document as one page)
             self.num_of_pages = 1
-            
-        if "language" in metadata:
-            self.lang = metadata["language"]
 
+        # metadata of the parser applied to the document
+        self.main_tika_parser = None
+
+        if ('X-Parsed-By' in metadata):
+            for parser in metadata['X-Parsed-By']:
+                if not isinstance(parser, list):
+                    self.main_tika_parser = metadata['X-Parsed-By'][1].split(".")[-1]
+
+        self.ocr_parsing = False
+        if "ocr_parsing" in metadata:
+            self.ocr_parsing = metadata["ocr_parsing"]
+
+            
+        # Creation date
+        self.creation_date = None
+        if "Creation-Date" in metadata:
+            self.creation_date = metadata["Creation-Date"]
+
+        elif "meta:creation_date" in metadata:
+            self.creation_date = metadata["meta:creation_date"]
+
+        elif "created" in metadata:
+            self.creation_date = metadata["created"]
+            
         # get the number of words/chars in the document
         self.num_words = 0
         self.num_chars = 0
@@ -87,6 +127,9 @@ class FARO_Document(object):
                 self.num_chars += len(line)
             
         # detect language of file with langdetect (overwrite the tika detection)
+        if "language" in metadata:
+            self.lang = metadata["language"]
+        
         try:
             self.lang = detect(" ".join(self.file_lines))
         except LangDetectException:
