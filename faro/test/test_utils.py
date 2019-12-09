@@ -4,7 +4,7 @@
 
 # the express permission of the authors.
 
-'''                                                                                                             
+'''
 
 Created on 1st of October (2019)
 
@@ -38,7 +38,3 @@ class UtilsTest(unittest.TestCase):
                          "{} Normalized text is not the expected result {}".format(
                              self.shortDescription(),
                              norm_text))
-
-
-  
-

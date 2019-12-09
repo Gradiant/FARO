@@ -129,14 +129,14 @@ def faro_execute(params):
         output_entity_file = params.output_entity_file
 
     logger.debug("OUTPUTENTITYFILE {}".format(output_entity_file))
-    
+
     # parse input file and join sentences if requested
     logger.info("Analysing {}".format(params.input_file))
-    
+
     faro_doc = FARO_Document(input_file, params.split_lines,
                              commons_config["threshold_chars_per_page"],
                              commons_config["threshold_filesize_per_page"])
-    
+
     if faro_doc.lang in ACCEPTED_LANGS:
         with open("config/" + faro_doc.lang + ".yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
@@ -171,7 +171,7 @@ def faro_execute(params):
                            "entities": dump_accepted_entity_dict,
                            "datetime": st}
             entity_dict = {**entity_dict, **faro_doc.get_metadata_dict()}
-                   
+
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
         else:
@@ -231,6 +231,6 @@ def faro_execute(params):
                     panda_dict[_key] = 0
 
         panda_dict.update(faro_doc.get_metadata_dict())
-                    
+
         df = pd.DataFrame(panda_dict, index=[0])
         print(df.to_csv(header="False", index=False).split("\n")[1])
