@@ -112,7 +112,7 @@ class Sensitivity_Scorer(object):
                 # the number of unique values
                 for token_key in entity_dict["CUSTOM"]:
                     result_dict["custom_words"] += entity_dict["CUSTOM"][token_key]
-                    
+
         score = self._get_ranking(result_dict)
 
         return {"score": score, "summary": result_dict}
