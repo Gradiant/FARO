@@ -36,7 +36,7 @@ class Detector(object):
 
         # full_text is used for proximity detection
         full_text = "".join(sent_list)
-        
+
         total_ent_list = []
 
         # Flag to indicate that a sign entity is expected (if True)
@@ -103,12 +103,12 @@ class Detector(object):
 
                     elif ent_key in ["FinancialData", "DNI_SPAIN"]:
                         sent = clean_text(ent[0])
-                        
+
                         if (get_cc_module('es', 'dni').is_valid(sent) or
                             get_cc_module('es', 'ccc').is_valid(sent) or
                             get_cc_module('es', 'cif').is_valid(sent) or
                             get_cc_module('es', 'iban').is_valid(sent) or
-                            get_cc_module('es', 'nie').is_valid(sent)):
+                                get_cc_module('es', 'nie').is_valid(sent)):
 
                             total_ent_list.append((ent[0], ent_key, ent[1],
                                                    str(ent[2] + offset),
@@ -125,17 +125,19 @@ class Detector(object):
             if next_person_has_signed:
                 min_itx_signed = self.signature_max_distance
                 id_min_itx = -1
-                
+
                 for i in range(len(total_ent_list)):
                     _ent = total_ent_list[i]
 
                     if _ent[1] == "PER":
                         if int(_ent[3]) > person_signed_idx:
-                            if int(_ent[3]) - person_signed_idx < min_itx_signed:
-                                min_itx_signed = int(_ent[3]) - person_signed_idx
+                            if (int(_ent[3]) - person_signed_idx <
+                                    min_itx_signed):
+                                min_itx_signed = (int(_ent[3]) -
+                                                  person_signed_idx)
                                 id_min_itx = i
                                 next_person_has_signed = False
-                        
+
                 if id_min_itx != -1:
                     _ent = total_ent_list[id_min_itx]
 
@@ -148,7 +150,7 @@ class Detector(object):
                 total_ent_list.append((_ent[0], _ent[1], _ent[0],
                                        str(_ent[2] + offset),
                                        str(_ent[3] + offset)))
-                    
+
             offset += len(sent)
 
         if next_person_has_signed:
@@ -169,7 +171,7 @@ class Detector(object):
 
                 total_ent_list.append((ent[0], "SIGNATURE", ent[2],
                                        ent[3], ent[4]))
-                
+
         return total_ent_list
 
     def _get_unique_ents(self, ent_list):
@@ -208,15 +210,15 @@ class Detector(object):
                 if _ent[1] in self.low_priority_list:
                     if _ent[0] not in visited_entities_dict:
                         filtered_entities.append(_ent)
-                    
+
                 else:
                     filtered_entities.append(_ent)
-                    
+
             return filtered_entities
 
         else:
             return ent_list
-    
+
     def analyse(self, sent_list):
         """ Obtain KPIs from a document and obtain the output in the right format (json)
 
@@ -228,7 +230,7 @@ class Detector(object):
         total_ent_list = self._get_kpis(sent_list)
 
         total_ent_list = self._discard_nonunique_kpis(total_ent_list)
-        
+
         unique_ent_dict = self._get_unique_ents(total_ent_list)
 
         return unique_ent_dict

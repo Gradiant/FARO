@@ -4,7 +4,7 @@ import gensim.utils as gensim_utils
 
 def normalize_text_proximity(message):
     """ Clean text of dots between words
-    
+
     Keyword arguments:
     message -- a plain sentence or paragraph
 
@@ -23,7 +23,7 @@ def normalize_text_proximity(message):
 
 def clean_text(message):
     """ Delete extra characters from text before validation
-    
+
     Keyword arguments:
     message -- a plain sentence or paragraph
 

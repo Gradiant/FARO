@@ -24,7 +24,7 @@ class FARO_Document(object):
 
     def get_metadata_dict(self):
         """ Extract a dictionary with metadata"""
-        
+
         dict_result = OrderedDict()
 
         # Adding metadata of fyle type to output
@@ -37,9 +37,9 @@ class FARO_Document(object):
         dict_result["meta:num_chars"] = self.num_chars
         dict_result["meta:tika_parser"] = self.main_tika_parser
         dict_result["meta:ocr"] = self.ocr_parsing
-    
+
         return dict_result
-    
+
     def _get_document_metadata(self, metadata):
         """ Extract relevant document metadata from a tika metadata dict
 
@@ -49,7 +49,7 @@ class FARO_Document(object):
         """
 
         # logger.info("METADATA DICT {}".format(metadata))
-        
+
         # extract content type
         if isinstance(metadata["Content-Type"], list):
             self.content_type = str(metadata["Content-Type"][0])
@@ -88,7 +88,7 @@ class FARO_Document(object):
 
         elif "meta:page-count" in metadata:
             self.num_of_pages = metadata["meta:page-count"]
-            
+
         else:
             # not supported yet (we consider the document as one page)
             self.num_of_pages = 1
@@ -99,13 +99,13 @@ class FARO_Document(object):
         if ('X-Parsed-By' in metadata):
             for parser in metadata['X-Parsed-By']:
                 if not isinstance(parser, list):
-                    self.main_tika_parser = metadata['X-Parsed-By'][1].split(".")[-1]
+                    self.main_tika_parser = metadata['X-Parsed-By'][1].split(
+                        ".")[-1]
 
         self.ocr_parsing = False
         if "ocr_parsing" in metadata:
             self.ocr_parsing = metadata["ocr_parsing"]
 
-            
         # Creation date
         self.creation_date = None
         if "Creation-Date" in metadata:
@@ -116,7 +116,7 @@ class FARO_Document(object):
 
         elif "created" in metadata:
             self.creation_date = metadata["created"]
-            
+
         # get the number of words/chars in the document
         self.num_words = 0
         self.num_chars = 0
@@ -125,20 +125,20 @@ class FARO_Document(object):
             for line in self.file_lines:
                 self.num_words += len(re.sub("[^\w]", " ",  line).split())
                 self.num_chars += len(line)
-            
+
         # detect language of file with langdetect (overwrite the tika detection)
         if "language" in metadata:
             self.lang = metadata["language"]
-        
+
         try:
             self.lang = detect(" ".join(self.file_lines))
-            
+
         except LangDetectException:
             self.lang = "unk"
-            
+
     def _preprocess_file_lines(self, file_lines, join_lines):
         """ Preprocess the text and join the lines if requested
-        
+
         Keyword arguments:
         file_lines: list of text lines extracted with Tika
         join_lines: should lines be joined (e.g. a paragraph)
@@ -149,7 +149,7 @@ class FARO_Document(object):
             file_lines = file_lines.strip().split("\n")
         else:
             file_lines = []
-            
+
         new_file_lines = []
         for line in file_lines:
             if not join_lines:
@@ -165,11 +165,11 @@ class FARO_Document(object):
         file_lines = new_file_lines
 
         return file_lines
-            
+
     def __init__(self, document_path, split_lines,
                  threshold_chars_per_page, threshold_filesize_per_page):
         """ Initialization
-        
+
         Keyword arguments:
         document_path -- path to the document
         split_lines -- wether to split lines or not
@@ -177,7 +177,7 @@ class FARO_Document(object):
         threshold_filesize_per_page -- maximum filesize per page in order to not apply OCR
 
         """
-        
+
         # parse input file and join sentences if requested
         file_lines, metadata = parse_file(document_path,
                                           threshold_chars_per_page,

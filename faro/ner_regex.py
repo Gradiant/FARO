@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 STRICT_REG_EMAIL_ADDRESS_V0 = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 
 # Credit Card
-STRICT_REG_CREDIT_CARD_V0 = (r"(?:(?P<visa>((?<![0-9])(?<![0-9][,.]))4[0-9]{12}(?:[0-9]{3})?)|(?P<mastercard>((?<![0-9])(?<![0-9][,.]))5[1-5][0-9]{14})|(?P<discover>((?<![0-9])(?<![0-9][,.]))6(?:011|5[0-9][0-9])[0-9]{12}))")
+STRICT_REG_CREDIT_CARD_V0 = (
+    r"(?:(?P<visa>((?<![0-9])(?<![0-9][,.]))4[0-9]{12}(?:[0-9]{3})?)|(?P<mastercard>((?<![0-9])(?<![0-9][,.]))5[1-5][0-9]{14})|(?P<discover>((?<![0-9])(?<![0-9][,.]))6(?:011|5[0-9][0-9])[0-9]{12}))")
 BROAD_REG_CREDIT_CARD_GEN_V1 = r"([0-9][\s\-_\.]*){8,}"
 
 # Financial Data
@@ -37,7 +38,7 @@ STRICT_REG_MONEY_V1 = r"\b(?<![,\.])\d+(,\d{2,})\b"
 # Phone
 BROAD_REG_PHONE_NUMBER_GEN_V3 = r"(\(?\s*(\+34|0034|34)\s*\)?\s*)?[89](\s+|-\.)?([0-9](\s+|-|\.)?){8}"
 
-#r"(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
+# r"(\(?\s*(\+34|0034|34)\s*\)?\s*)?(?<![0-9])[\s|\-|\.]?[8|9][\s+|\-|\.]?([0-9][\s+|\-|\.]?){8}(\s+|\b)(?!(?:\s?[0-9]){1,})"
 
 # Mobile
 BROAD_REG_MOBILE_NUMBER_GEN_V3 = r"[67](\s+|-\.)?([0-9](\s+|-|\.)?){8}"
@@ -54,7 +55,7 @@ DICT_REGEX_STRICT = {"Email": [(STRICT_REG_EMAIL_ADDRESS_V0,
                                         "STRICT_REG_IBAN_V1")],
                      "DNI_SPAIN": [(STRICT_REG_DNI_V0, "STRICT_REG_DNI_V0"),
                                    (STRICT_REG_CIF_V0, "STRICT_REG_CIF_V0"),
-                     ],
+                                   ],
                      "NI_UK": [(STRICT_REG_NI_UK_V0,
                                 "STRICT_REG_NI_UK_V0")],
                      "MONEY": [(STRICT_REG_EURO_V0,
@@ -75,7 +76,7 @@ DICT_REGEX_BROAD = {"CreditCard": [(BROAD_REG_CREDIT_CARD_GEN_V1,
                                    "BROAD_REG_DNI_GEN_V0"),
                                   (BROAD_REG_CIF_GEN_V0,
                                    "BROAD_REG_CIF_GEN_V0"),
-                    ],
+                                  ],
                     "PHONE": [
                         (BROAD_REG_PHONE_NUMBER_GEN_V3,
                          "BROAD_REG_PHONE_NUMBER_GEN_V3"),
@@ -98,7 +99,7 @@ class Regex_Ner(object):
         """
 
         result_dict = OrderedDict()
-        
+
         for _regexp_key in self.regexp_compiler_dict[_type]:
             for _regexp in self.regexp_compiler_dict[_type][_regexp_key]:
                 it = _regexp[0].finditer(sentence)
@@ -118,7 +119,7 @@ class Regex_Ner(object):
                                     full_text,
                                     offset):
         """ Check the proximity of keywords to a regexp detection
-        
+
         Keyword arguments:
         unconsolidated_dict -- dict with entities that were not consolidated
         result_dict -- dict to store consolidated entities
@@ -126,7 +127,7 @@ class Regex_Ner(object):
         offset -- offset in the full document of the current sentence
 
         """
-        
+
         for key in unconsolidated_dict:
             if key in self.regexp_config_dict:
                 left_span_len = self.regexp_config_dict[key]["left_span_len"]
@@ -172,19 +173,20 @@ class Regex_Ner(object):
         # dict to store the consolidated detections
         result_dict = OrderedDict()
         unconsolidated_dict = OrderedDict()
-    
+
         result_broad_dict = self._detect_regexp(sentence, "broad")
         result_strict_dict = self._detect_regexp(sentence, "strict")
 
         # entities that pass the strict regexp are automatically validated
         result_dict = copy.deepcopy(result_strict_dict)
-        
+
         for key in result_broad_dict:
             consolidated_list = []
-            
+
             if key in result_dict:
                 # get the consolidated regexp
-                consolidated_list = [clean_text(regexp[0]) for regexp in result_dict[key]]
+                consolidated_list = [clean_text(
+                    regexp[0]) for regexp in result_dict[key]]
 
             for _broad_regexp in result_broad_dict[key]:
                 if clean_text(_broad_regexp[0]) not in consolidated_list:
@@ -198,7 +200,7 @@ class Regex_Ner(object):
                                          result_dict,
                                          full_text,
                                          offset)
-                
+
         return result_dict
 
     def __init__(self, broad_regexp_dict=DICT_REGEX_BROAD,
@@ -226,7 +228,7 @@ class Regex_Ner(object):
             for _regexp in broad_regexp_dict[_regexp_key]:
                 self.regexp_compiler_dict["broad"][_regexp_key].append(
                     (re.compile(_regexp[0]), _regexp[1]))
-            
+
         self.regexp_compiler_dict["strict"] = OrderedDict()
         for _regexp_key in strict_regexp_dict:
             self.regexp_compiler_dict["strict"][_regexp_key] = []
@@ -234,5 +236,5 @@ class Regex_Ner(object):
             for _regexp in strict_regexp_dict[_regexp_key]:
                 self.regexp_compiler_dict["strict"][_regexp_key].append(
                     (re.compile(_regexp[0]), _regexp[1]))
-                
+
         self.regexp_config_dict = regexp_config_dict
