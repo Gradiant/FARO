@@ -1,70 +1,73 @@
-from statistics import mean
 from tika import parser
 import logging
-import tika
+import collections
 import os
 os.environ['TIKA_SERVER_JAR'] = "https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.22/tika-server-1.22.jar"
 
 logger = logging.getLogger(__name__)
 
+def flatten(iterable):
+    for el in iterable:
+        if isinstance(el, collections.Iterable) and not isinstance(el, str):
+            yield from flatten(el)
+        else:
+            yield el
 
-def parse_file(file_path, threshold_chars_per_page=100,
-               threshold_filesize_per_page=30000):
+def parse_file(file_path, threshold_filesize_chars_ratio):
     """ Parses a file and returns the list of sentences
 
     Keyword arguments:
     file_path -- path to file
-    threshold_chars_per_page -- maximum chars per page in order to not apply OCR
-    threshold_filesize_per_page -- maximum filesize per page in order to not apply OCR
+    threshold_filesize_chars_ratio -- filesize per char ratio in order to force OCR
 
     """
-    parsed = {'content': None, 'metadata': None}
+    filesize = os.path.getsize(file_path)
+    parsed = {'content': None, 'metadata': {'filesize': filesize}}
     parsed.update(parser.from_file(file_path))
     logger.debug(parsed['metadata'])
 
     # try to implement a smarter strategy for OCRing PDFs
+    forceOCR = False
     if parsed['metadata']:
         try:
-            if any('TesseractOCRParser' in s
-                   for s in parsed['metadata']['X-Parsed-By']):
+            flat_parsed = list(flatten(parsed['metadata']['X-Parsed-By']))
+            if any('TesseractOCRParser' in s for s in flat_parsed):
                 # OCR already executed, return
                 parsed['metadata']['ocr_parsing'] = True
-
                 return parsed['content'], parsed['metadata']
+
             if parsed['metadata']['Content-Type'] == 'application/pdf':
                 # Determine whether or not to run OCR based on the following variables
+                #   - Use total number of chars recognized (pdf:charsPerPage)
                 #   - Use size of file
-                #   - Use number of pages (xmpTPg:NPages)
-                #   - Use chars per page (pdf:charsPerPage)
                 if isinstance(parsed['metadata']['pdf:charsPerPage'], list):
-                    charsperpage = mean(
-                        [int(chars_in_page) for chars_in_page in
-                         parsed['metadata']['pdf:charsPerPage']])
+                    chars = sum(map(int,parsed['metadata']['pdf:charsPerPage']))
                 else:
-                    charsperpage = int(parsed['metadata']['pdf:charsPerPage'])
+                    chars = int(parsed['metadata']['pdf:charsPerPage'])
 
-                if charsperpage <= threshold_chars_per_page:
-                    filesize = os.path.getsize(file_path)
-                    npages = int(parsed['metadata']['xmpTPg:NPages'])
-                    filesizeperpage = filesize / npages
-                    # If in average we have less than threshold chars per page
-                    # and the average filesize per page is greater 500KB
-                    # run OCR and append to content
-                    if filesizeperpage >= threshold_filesize_per_page:
-                        # TODO: Grab only content if tika-python merges our PR
-                        logger.info(
-                            "File is big but did not get much content...running OCR")
-                        parsed_ocr_text = parser.from_file(
-                            file_path,
-                            headers={'X-Tika-PDFOcrStrategy':
-                                     'ocr_only'})
+                if chars == 0:
+                    forceOCR = True
+                else:
+                    filesize_chars_ratio = filesize / chars
+                    if filesize_chars_ratio > threshold_filesize_chars_ratio:
+                        forceOCR = True
+                        logger.debug('size: {}, chars: {}, ratio: {}'.format(
+                            filesize,
+                            chars,
+                            filesize_chars_ratio))
 
-                        parsed['metadata']['ocr_parsing'] = True
-
-                        if parsed['content'] is None:
-                            parsed['content'] = parsed_ocr_text['content']
-                        else:
-                            parsed['content'] += parsed_ocr_text['content']
+                if forceOCR:
+                    parsed['metadata']['ocr_parsing'] = True
+                    # TODO: Grab only content if tika-python merges our PR
+                    logger.info("PDF file is big but did not get much content...forcing OCR")
+                    parsed_ocr_text = parser.from_file(
+                        file_path,
+                        headers={'X-Tika-PDFOcrStrategy':
+                        'ocr_only'})
+                    if parsed['content'] is None:
+                        parsed['content'] = parsed_ocr_text['content']
+                    else:
+                        parsed['content'] += parsed_ocr_text['content']
         except KeyError as e:
             logger.debug("Did not find key {} in metadata".format(e))
         except Exception as e:
