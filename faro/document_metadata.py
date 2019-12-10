@@ -33,9 +33,9 @@ class FARO_Document(object):
         dict_result["meta:pages"] = self.num_of_pages
         dict_result["meta:lang"] = self.lang
         dict_result["meta:date"] = self.creation_date
+        dict_result["meta:filesize"] = self.filesize
         dict_result["meta:num_words"] = self.num_words
         dict_result["meta:num_chars"] = self.num_chars
-        dict_result["meta:tika_parser"] = self.main_tika_parser
         dict_result["meta:ocr"] = self.ocr_parsing
 
         return dict_result
@@ -48,7 +48,7 @@ class FARO_Document(object):
 
         """
 
-        # logger.info("METADATA DICT {}".format(metadata))
+        logger.info("METADATA DICT {}".format(metadata))
 
         # extract content type
         if isinstance(metadata["Content-Type"], list):
@@ -93,15 +93,11 @@ class FARO_Document(object):
             # not supported yet (we consider the document as one page)
             self.num_of_pages = 1
 
-        # metadata of the parser applied to the document
-        self.main_tika_parser = None
+        self.filesize = None
+        if "filesize" in metadata:
+            self.filesize = metadata["filesize"]
 
-        if ('X-Parsed-By' in metadata):
-            for parser in metadata['X-Parsed-By']:
-                if not isinstance(parser, list):
-                    self.main_tika_parser = metadata['X-Parsed-By'][1].split(
-                        ".")[-1]
-
+        # OCRed
         self.ocr_parsing = False
         if "ocr_parsing" in metadata:
             self.ocr_parsing = metadata["ocr_parsing"]
@@ -167,7 +163,7 @@ class FARO_Document(object):
         return file_lines
 
     def __init__(self, document_path, split_lines,
-                 threshold_chars_per_page, threshold_filesize_per_page):
+                 threshold_filesize_chars_ratio):
         """ Initialization
 
         Keyword arguments:
@@ -180,8 +176,7 @@ class FARO_Document(object):
 
         # parse input file and join sentences if requested
         file_lines, metadata = parse_file(document_path,
-                                          threshold_chars_per_page,
-                                          threshold_filesize_per_page)
+                                          threshold_filesize_chars_ratio)
 
         self.file_lines = self._preprocess_file_lines(file_lines, split_lines)
         self._get_document_metadata(metadata)
