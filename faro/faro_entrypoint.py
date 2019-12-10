@@ -134,8 +134,7 @@ def faro_execute(params):
     logger.info("Analysing {}".format(params.input_file))
 
     faro_doc = FARO_Document(input_file, params.split_lines,
-                             commons_config["threshold_chars_per_page"],
-                             commons_config["threshold_filesize_per_page"])
+                             commons_config["threshold_filesize_chars_ratio"])
 
     if faro_doc.lang in ACCEPTED_LANGS:
         with open("config/" + faro_doc.lang + ".yaml", "r") as stream:
@@ -170,8 +169,6 @@ def faro_execute(params):
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
                            "datetime": st}
-            entity_dict = {**entity_dict, **faro_doc.get_metadata_dict()}
-
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
         else:
@@ -188,8 +185,6 @@ def faro_execute(params):
             entity_dict = {"filepath": input_file,
                            "entities": dump_accepted_entity_dict,
                            "datetime": st}
-
-            entity_dict = {**entity_dict, **faro_doc.get_metadata_dict()}
             f_out.write("{}\n".format(json.dumps(entity_dict)))
 
     # score the document, given the extracted entities
