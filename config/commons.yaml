@@ -1,5 +1,4 @@
-threshold_chars_per_page: 100
-threshold_filesize_per_page: 30000
+threshold_filesize_chars_ratio: 100
 
 logfilter_entity_list:
     - Email
