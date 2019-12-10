@@ -21,14 +21,17 @@ def parse_file(file_path, threshold_filesize_chars_ratio):
     threshold_filesize_chars_ratio -- filesize per char ratio in order to force OCR
 
     """
-    filesize = os.path.getsize(file_path)
-    parsed = {'content': None, 'metadata': {'filesize': filesize}}
+
+    parsed = {'content': None, 'metadata': None}
     parsed.update(parser.from_file(file_path))
+    filesize = os.path.getsize(file_path)
     logger.debug(parsed['metadata'])
 
     # try to implement a smarter strategy for OCRing PDFs
     forceOCR = False
     if parsed['metadata']:
+        # Add filesize to metadata
+        parsed['metadata']['filesize'] = filesize
         try:
             flat_parsed = list(flatten(parsed['metadata']['X-Parsed-By']))
             if any('TesseractOCRParser' in s for s in flat_parsed):
