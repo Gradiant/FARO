@@ -25,7 +25,6 @@ def parse_file(file_path, threshold_filesize_chars_ratio):
     parsed = {'content': None, 'metadata': None}
     parsed.update(parser.from_file(file_path))
     filesize = os.path.getsize(file_path)
-    logger.debug(parsed['metadata'])
 
     # try to implement a smarter strategy for OCRing PDFs
     forceOCR = False
@@ -33,6 +32,10 @@ def parse_file(file_path, threshold_filesize_chars_ratio):
         # Add filesize to metadata
         parsed['metadata']['filesize'] = filesize
         try:
+            # First check if OCR is disabled by envvar
+            if os.getenv('FARO_DISABLE_OCR'):
+                return parsed['content'], parsed['metadata']
+
             flat_parsed = list(flatten(parsed['metadata']['X-Parsed-By']))
             if any('TesseractOCRParser' in s for s in flat_parsed):
                 # OCR already executed, return
