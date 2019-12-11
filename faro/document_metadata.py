@@ -48,7 +48,7 @@ class FARO_Document(object):
 
         """
 
-        logger.info("METADATA DICT {}".format(metadata))
+        logger.debug("METADATA DICT {}".format(metadata))
 
         # extract content type
         if isinstance(metadata["Content-Type"], list):
