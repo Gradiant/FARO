@@ -6,7 +6,7 @@ RUN pip3 wheel python-Levenshtein==0.12.0 regex==2019.8.19
 
 FROM python:3.7.5-slim-buster
 
-ENV VERSION=1.0.1
+ENV VERSION=1.1.0
 
 # We copy first requirements.txt to build-cache requirements if not changed
 COPY requirements.txt /
