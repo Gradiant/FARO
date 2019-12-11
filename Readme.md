@@ -51,7 +51,6 @@ The project contains the following folders:
  * `docker_build_faro.bat`: script for building FARO docker image on Windows.
  * `docker_run_faro.sh`: script for running a FARO container on Linux and Mac OS.
  * `docker_run_faro.bat`: script for running a FARO container on Windows.
- * `log4j.properties`: tweak Tika server logging to avoid excessive verbosity, mainly coming from PDFBox.
  * `CHANGELOG`: FARO changelog.
 
 ## Run FARO with Docker
@@ -90,6 +89,14 @@ Windows
 ./docker_run_faro.bat <your folder with files>
 ```
 
+We have added OCR support to tika through its tesseract integration if you want to disable OCR for any reason add `--no-ocr` to the above scripts.
+
+```
+./docker_run_faro.sh <your folder with files> --no-ocr
+```
+
+
+
 ### Results
 
 FARO creates an "output" folder inside the current folder and stores the results of the execution in two files:
@@ -97,22 +104,18 @@ FARO creates an "output" folder inside the current folder and stores the results
  * `output/scan.$CURRENT_TIME.csv`: is a csv file with the score given to the document and the frequence of indicators in each file.
 
 ```
-filepath,score,person_position_organization,monetary_quantity,signature,personal_email,mobile_phone_number,financial_data,document_id,custom_words,content-type
-/Users/test/code/FARO/data/quick_test_data/con espacio/20190912-FS2019-0177717-36155797G.pdf,high,0,3,0,0,0,0,1,2,application/pdf
-/Users/test/code/FARO/data/quick_test_data/Factura_NRU_23092019_2104054_0_1_001.pdf,high,0,0,0,0,0,0,1,4,application/pdf
-/Users/test/code/FARO/data/quick_test_data/Factura_273496_Plancha.pdf,high,0,6,0,0,1,0,2,4,application/pdf
-/Users/test/code/FARO/data/quick_test_data/20190912-FS2019-0177717-36155797G.pdf,high,0,3,0,0,0,0,1,2,application/pdf
-/Users/test/code/FARO/data/quick_test_data/informe_tecnico_FARO.rtf,high,0,3,0,2,0,0,3,6,application/rtf
+filepath,score,person_position_organization,monetary_quantity,signature,personal_email,mobile_phone_number,financial_data,document_id,custom_words,meta:content-type,meta:author,meta:pages,meta:lang,meta:date,meta:filesize,meta:num_words,meta:num_chars,meta:ocr
+/Users/test/code/FARO_datasets/quick_test_data/Factura_NRU_0_1_001.pdf,high,0,0,0,0,0,0,1,4,application/pdf,Powered By Crystal,1,es,,85739,219,1185,False
+/Users/test/code/FARO_datasets/quick_test_data/Factura_Plancha.pdf,high,0,6,0,0,0,0,2,8,application/pdf,Python PDF Library - http://pybrary.net/pyPdf/,1,es,,77171,259,1524,True
+/Users/test/code/FARO_datasets/quick_test_data/20190912-FS2019.pdf,high,0,3,0,0,0,0,1,2,application/pdf,FPDF 1.6,1,es,2019-09-12T20:08:19Z,1545,62,648,False
 ```
 
 * `output/scan.$CURRENT_TIME.entity`: is a json with the list of indicators (disaggregated) extracted in a file. For example:
 
 ```
-{"filepath": "/Users/test/code/FARO/data/quick_test_data/con espacio/20190912-FS2019-0177717-36155797G.pdf", "entities": {"document_id": {"A-28046316": 1}, "custom_words": {"factura": 1, "total": 1}, "monetary_quantity": {"3,06": 1, "0,64": 1, "3,70": 1}}, "datetime": "2019-11-05 12:52:55", "Content-Type": "application/pdf"}
-{"filepath": "/Users/test/code/FARO/data/quick_test_data/Factura_NRU_23092019_2104054_0_1_001.pdf", "entities": {"custom_words": {"facturar": 3, "total": 1}, "prob_currency": {"12,0021": 1, "12,00": 1, "9,92": 1, "3,9921": 1, "3,99": 1, "3,30": 1, "15,99": 1, "13,21": 1, "1.106.166": 1, "1,00": 1, "99,00": 1}, "document_id": {"A-60195278": 1}}, "datetime": "2019-11-05 12:52:59", "Content-Type": "application/pdf"}
-{"filepath": "/Users/test/code/FARO/data/quick_test_data/Factura_273496_Plancha.pdf", "entities": {"document_id": {"B95662888": 1, "53048482V": 1}, "mobile_phone_number": {"680217067 ": 1}, "custom_words": {"factura": 1, "facturar": 1, "total": 1, "importe": 1}, "monetary_quantity": {"156,20": 2, "2,84": 1, "0,00": 1, "159,04": 1, "32,80": 2, "191,84": 1}, "prob_currency": {"1,00": 3, "189,00": 1}}, "datetime": "2019-11-05 12:53:03", "Content-Type": "application/pdf"}
-{"filepath": "/Users/test/code/FARO/data/quick_test_data/20190912-FS2019-0177717-36155797G.pdf", "entities": {"document_id": {"A-28046316": 1}, "custom_words": {"factura": 1, "total": 1}, "monetary_quantity": {"3,06": 1, "0,64": 1, "3,70": 1}}, "datetime": "2019-11-05 12:53:07", "Content-Type": "application/pdf"}
-{"filepath": "/Users/test/code/FARO/data/quick_test_data/informe_tecnico_FARO.rtf", "entities": {"custom_words": {"confidencial": 1, "contrato": 1, "cr\u00e9dito": 2, "facturar": 1, "total": 1}, "email": {"merpastor@icav.es": 1, "soia@csic.es": 1}, "document_id": {"X4813918H": 1, "X4658630A": 2, "B07411598": 1}, "monetary_quantity": {"61.305,12": 1, "66.500,47": 1, "0,00": 1}}, "datetime": "2019-11-05 12:56:12", "Content-Type": "application/rtf"}
+{"filepath": "/Users/test/code/FARO_datasets/quick_test_data/Factura_NRU_0_1_001.pdf", "entities": {"custom_words": {"facturar": 3, "total": 1}, "prob_currency": {"12,0021": 1, "12,00": 1, "9,92": 1, "3,9921": 1, "3,99": 1, "3,30": 1, "15,99": 1, "13,21": 1, "1.106.166": 1, "1,00": 1, "99,00": 1}, "document_id": {"89821284M": 1}}, "datetime": "2019-12-11 14:19:17"}
+{"filepath": "/Users/test/code/FARO_datasets/quick_test_data/Factura_Plancha.pdf", "entities": {"document_id": {"H82547761": 1, "21809943D": 2}, "custom_words": {"factura": 2, "facturar": 2, "total": 2, "importe": 2}, "monetary_quantity": {"156,20": 4, "2,84": 2, "0,00": 2, "159,04": 2, "32,80": 4, "191,84": 2}, "prob_currency": {"1,00": 6, "189,00": 2}}, "datetime": "2019-12-11 14:19:27"}
+{"filepath": "/Users/test/code/FARO_datasets/quick_test_data/20190912-FS2019.pdf", "entities": {"document_id": {"C-01107564": 1}, "custom_words": {"factura": 1, "total": 1}, "monetary_quantity": {"3,06": 1, "0,64": 1, "3,70": 1}}, "datetime": "2019-12-11 14:19:33"}
 ```
 
 ## Run FARO On Host Machine
