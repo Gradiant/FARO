@@ -1,3 +1,12 @@
+1.1.0
+-----
+
+* Add OCR capabilities
+* Add option to disable OCR for performance reasons
+* Let tika handle the supported file formats
+* Allow for basic document classification adding metadata to ouput: type of doc, author, creation date, filesize, etc.
+* Rewrite metadata handling
+
 1.0.1
 -----
 
