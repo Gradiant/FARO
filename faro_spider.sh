@@ -10,22 +10,26 @@ if [ ! -f $TIKA_SERVER_JAR ]; then
    	wget -O $TIKA_SERVER_JAR https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.22/tika-server-1.22.jar
 fi
 
-# Get rid of tika server initialization warnings
-TIKA_SERVER_CONFIG=/tmp/tika-config.xml
-if [ ! -f $TIKA_SERVER_CONFIG ]; then
-	echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<properties>\n<service-loader initializableProblemHandler=\"ignore\"/>\n</properties>" > /tmp/tika-config.xml
+# Default faro tika config file
+FARO_TIKA_CONFIG="$PWD/config/base-tika-config.xml"
+# Check if FARO_DISABLE_OCR is set on the current shell, if so disable OCR execution
+if [ ! -z "$FARO_DISABLE_OCR" ]; then
+	echo "found FARO_DISABLE_OCR environment variable: disabling OCR parsing"
+	FARO_TIKA_CONFIG="$PWD/config/disable-ocr-tika-config.xml"
 fi
-# Set envvar for all processes started from current shell
-export TIKA_CONFIG="/tmp/tika-config.xml"
 
-# Check if tika is running locally already
+# Set envvar for all processes started from current shell
+export TIKA_CONFIG="$FARO_TIKA_CONFIG"
+
+# restart tika server to allow new configuration and clean RAM
 nc -z 0.0.0.0 9998 2>/dev/null
-if [ $? -ne 0 ]
-then
-	java -Dlog4j.configuration=file:log4j.properties -jar $TIKA_SERVER_JAR -h 0.0.0.0 &
-	# Allow tika some uptime to finish initialization
-	sleep 5
+if [ $? -eq 0 ]; then
+	ps -ef | grep tika-server.jar | grep -v grep | awk '{print $2}' | xargs kill
 fi
+
+java -Dlog4j.configuration=file:config/log4j.properties -jar $TIKA_SERVER_JAR -h 0.0.0.0 &
+# Allow tika some uptime to finish initialization
+sleep 5
 
 if [ -z "$2" ]
 then
