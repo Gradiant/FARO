@@ -1,7 +1,7 @@
 @ECHO off
 
 ECHO Building gradiant/faro docker image...
-docker build -t gradiant/faro:1.0.1 .
+docker build -t gradiant/faro:1.1.0 .
 
 git lfs pull
 IF %ERRORLEVEL% NEQ 0 (
