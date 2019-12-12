@@ -64,7 +64,7 @@ def parse_file(file_path):
                 else:
                     filesize_chars_ratio = filesize / chars
                     if filesize_chars_ratio > pdf_ocr_ratio:
-                        forceOCR = True
+                        force_ocr = True
                         logger.debug('size: {}, chars: {}, ratio: {}'.format(
                             filesize,
                             chars,
