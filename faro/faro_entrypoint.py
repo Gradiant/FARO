@@ -133,8 +133,7 @@ def faro_execute(params):
     # parse input file and join sentences if requested
     logger.info("Analysing {}".format(params.input_file))
 
-    faro_doc = FARO_Document(input_file, params.split_lines,
-                             commons_config["threshold_filesize_chars_ratio"])
+    faro_doc = FARO_Document(input_file, params.split_lines)
 
     if faro_doc.lang in ACCEPTED_LANGS:
         with open("config/" + faro_doc.lang + ".yaml", "r") as stream:

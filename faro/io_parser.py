@@ -13,7 +13,7 @@ def flatten(iterable):
         else:
             yield el
 
-def parse_file(file_path, threshold_filesize_chars_ratio):
+def parse_file(file_path):
     """ Parses a file and returns the list of sentences
 
     Keyword arguments:
@@ -22,18 +22,26 @@ def parse_file(file_path, threshold_filesize_chars_ratio):
 
     """
 
+    ## Retrieve envvars
+    timeout = int(os.getenv('FARO_REQUESTS_TIMEOUT', 60))
+    pdf_ocr_ratio = int(os.getenv('FARO_PDF_OCR_RATIO', 150))
+    disable_ocr = os.getenv('FARO_DISABLE_OCR', False)
+
+    # OCR is time consuming we will need to raise the request timeout to allow for processing
+    requestOptions = {'timeout': timeout}
+
     parsed = {'content': None, 'metadata': None}
-    parsed.update(parser.from_file(file_path))
+    parsed.update(parser.from_file(file_path, requestOptions=requestOptions))
     filesize = os.path.getsize(file_path)
 
     # try to implement a smarter strategy for OCRing PDFs
-    forceOCR = False
+    force_ocr = False
     if parsed['metadata']:
         # Add filesize to metadata
         parsed['metadata']['filesize'] = filesize
         try:
             # First check if OCR is disabled by envvar
-            if os.getenv('FARO_DISABLE_OCR'):
+            if disable_ocr:
                 return parsed['content'], parsed['metadata']
 
             flat_parsed = list(flatten(parsed['metadata']['X-Parsed-By']))
@@ -52,24 +60,25 @@ def parse_file(file_path, threshold_filesize_chars_ratio):
                     chars = int(parsed['metadata']['pdf:charsPerPage'])
 
                 if chars == 0:
-                    forceOCR = True
+                    force_ocr = True
                 else:
                     filesize_chars_ratio = filesize / chars
-                    if filesize_chars_ratio > threshold_filesize_chars_ratio:
+                    if filesize_chars_ratio > pdf_ocr_ratio:
                         forceOCR = True
                         logger.debug('size: {}, chars: {}, ratio: {}'.format(
                             filesize,
                             chars,
                             filesize_chars_ratio))
 
-                if forceOCR:
+                if force_ocr:
                     parsed['metadata']['ocr_parsing'] = True
                     # TODO: Grab only content if tika-python merges our PR
                     logger.info("PDF file is big but did not get much content...forcing OCR")
                     parsed_ocr_text = parser.from_file(
                         file_path,
                         headers={'X-Tika-PDFOcrStrategy':
-                        'ocr_only'})
+                        'ocr_only'},
+                        requestOptions=requestOptions)
                     if parsed['content'] is None:
                         parsed['content'] = parsed_ocr_text['content']
                     else:

@@ -162,8 +162,7 @@ class FARO_Document(object):
 
         return file_lines
 
-    def __init__(self, document_path, split_lines,
-                 threshold_filesize_chars_ratio):
+    def __init__(self, document_path, split_lines):
         """ Initialization
 
         Keyword arguments:
@@ -175,8 +174,7 @@ class FARO_Document(object):
         """
 
         # parse input file and join sentences if requested
-        file_lines, metadata = parse_file(document_path,
-                                          threshold_filesize_chars_ratio)
+        file_lines, metadata = parse_file(document_path)
 
         self.file_lines = self._preprocess_file_lines(file_lines, split_lines)
         self._get_document_metadata(metadata)

@@ -1,5 +1,3 @@
-threshold_filesize_chars_ratio: 100
-
 logfilter_entity_list:
     - Email
     - FinancialData
@@ -54,7 +52,7 @@ low_priority_list:
     - PROB_CURRENCY
 
 sensitivity:
-    low: 
+    low:
         person_position_organization:
             min: 1
             max: 6

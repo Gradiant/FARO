@@ -89,13 +89,16 @@ Windows
 ./docker_run_faro.bat <your folder with files>
 ```
 
-We have added OCR support to tika through its tesseract integration if you want to disable OCR for any reason add `--no-ocr` to the above scripts.
+We have added OCR support to tika through its tesseract integration. **Some customization of the OCR process can be tweaked through the use of an env file** whose path needs to be provided as the second argument to the script. We have provided a commented example to serve as a template [here](docker_faro_env_example.list)
 
 ```
-./docker_run_faro.sh <your folder with files> --no-ocr
+./docker_run_faro.sh <your folder with files> <path to env file>
 ```
 
-
+for example:
+```
+./docker_run_faro.sh ../data docker_faro_env_example.list
+```
 
 ### Results
 
@@ -203,6 +206,12 @@ Our spider is a script to recursively analyse the documents inside a folder, sto
 ```
 ./faro_spider.sh <your folder with files>
 ```
+
+After adding OCR there are some configuration that can be customized for FARO execution through environment variables
+
+* `FARO_DISABLE_OCR`: if this variable is found (with any value) FARO will not execute OCR on the documents
+* `FARO_REQUESTS_TIMEOUT`: Number of seconds before FARO will timeout if the tika server does not respond (default: 60)
+* `FARO_PDF_OCR_RATIO`: Bytes per character used in PDF mixed documents (text and images) to force OCR (default: 150 bytes/char)
 
 ### Single file detection
 
