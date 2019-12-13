@@ -15,14 +15,12 @@ Created on 13th of March of 2018
 
 '''
 import yaml
+import os
 import sys
 import argparse
 import logging
 from faro.faro_commons import Defaults
 from faro.faro_entrypoint import faro_execute as execute
-
-
-_CONFIG_YAML = "config/logging.yaml"
 
 
 def process_args(args, defaults, description):
@@ -77,17 +75,14 @@ def process_args(args, defaults, description):
 def launch(args, defaults, description):
     """ Basic launch functionality """
 
-    with open(_CONFIG_YAML, "r") as f_stream:
-        _config = yaml.load(f_stream, Loader=yaml.FullLoader)
-
-    log_level = getattr(logging, _config["logging"]["log_level"], None)
+    log_level = os.getenv('FARO_LOG_LEVEL', "INFO")
+    log_file = os.getenv('FARO_LOG_FILE', None)
 
     # set up logging to file - see previous section for more details
     logging.basicConfig(level=log_level)
 
-    if _config["logging"]["log_file"] is not None:
-        console = logging.FileHandler(_config["logging"]["log_file"])
-
+    if log_file is not None:
+        console = logging.FileHandler(log_file)
     else:
         # define a Handler which writes INFO messages or higher to the sys.stderr
         console = logging.StreamHandler()

@@ -1,3 +1,0 @@
-logging:
-    log_file: faro.log
-    log_level: INFO
