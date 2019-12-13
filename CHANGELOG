@@ -6,6 +6,7 @@
 * Let tika handle the supported file formats
 * Allow for basic document classification adding metadata to ouput: type of doc, author, creation date, filesize, etc.
 * Rewrite metadata handling
+* Move log and OCR configuration to envvars to integrate better with docker
 
 1.0.1
 -----

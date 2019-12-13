@@ -207,11 +207,16 @@ Our spider is a script to recursively analyse the documents inside a folder, sto
 ./faro_spider.sh <your folder with files>
 ```
 
-After adding OCR there are some configuration that can be customized for FARO execution through environment variables
+After adding OCR there are some configuration that can be customized for FARO execution through environment variables:
 
 * `FARO_DISABLE_OCR`: if this variable is found (with any value) FARO will not execute OCR on the documents
 * `FARO_REQUESTS_TIMEOUT`: Number of seconds before FARO will timeout if the tika server does not respond (default: 60)
 * `FARO_PDF_OCR_RATIO`: Bytes per character used in PDF mixed documents (text and images) to force OCR (default: 150 bytes/char)
+
+Logging configuration can also be configured through environment variables:
+
+* `FARO_LOG_LEVEL`: Faro Logging level (default: INFO)
+* `FARO_LOG_FILE`: Faro Logging file (default: None). While using docker make sure to set it inside the `output` folder to persist it in the host machine.
 
 ### Single file detection
 
