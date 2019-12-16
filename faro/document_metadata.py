@@ -34,8 +34,6 @@ class FARO_Document(object):
         dict_result["meta:lang"] = self.lang
         dict_result["meta:date"] = self.creation_date
         dict_result["meta:filesize"] = self.filesize
-        dict_result["meta:num_words"] = self.num_words
-        dict_result["meta:num_chars"] = self.num_chars
         dict_result["meta:ocr"] = self.ocr_parsing
 
         return dict_result
@@ -114,6 +112,7 @@ class FARO_Document(object):
             self.creation_date = metadata["created"]
 
         # get the number of words/chars in the document
+        # FIXME: (these feats are calculated but not used in output)
         self.num_words = 0
         self.num_chars = 0
 
