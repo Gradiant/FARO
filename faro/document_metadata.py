@@ -5,6 +5,8 @@ from langdetect.lang_detect_exception import LangDetectException
 from .utils import preprocess_text
 from .io_parser import parse_file
 from collections import OrderedDict
+from requests.exceptions import ReadTimeout
+
 
 # init the seeed of the lang detection algorithm
 DetectorFactory.seed = 0
@@ -28,13 +30,14 @@ class FARO_Document(object):
         dict_result = OrderedDict()
 
         # Adding metadata of fyle type to output
-        dict_result["meta:content-type"] = self.content_type
-        dict_result["meta:author"] = self.author
-        dict_result["meta:pages"] = self.num_of_pages
-        dict_result["meta:lang"] = self.lang
-        dict_result["meta:date"] = self.creation_date
-        dict_result["meta:filesize"] = self.filesize
-        dict_result["meta:ocr"] = self.ocr_parsing
+        dict_result["meta:content-type"] = self.content_type if hasattr(self, "content_type") else None
+        dict_result["meta:author"] = self.author if hasattr(self, "author") else None
+        dict_result["meta:pages"] = self.num_of_pages if hasattr(self, "num_of_pages") else None
+        dict_result["meta:lang"] = self.lang if hasattr(self, "lang") else None
+        dict_result["meta:date"] = self.creation_date if hasattr(self, "creation_date") else None
+        dict_result["meta:filesize"] = self.filesize if hasattr(self, "filesize") else None
+        dict_result["meta:ocr"] = self.ocr_parsing if hasattr(self, "ocr_parsing") else None
+        # dict_result["meta:error"] = self.metadata_error if hasattr(self, "metadata_error") else None
 
         return dict_result
 
@@ -48,6 +51,10 @@ class FARO_Document(object):
 
         logger.debug("METADATA DICT {}".format(metadata))
 
+        if metadata is None:
+            self.metadata_error = True
+            return
+        
         # extract content type
         if isinstance(metadata["Content-Type"], list):
             self.content_type = str(metadata["Content-Type"][0])
@@ -173,7 +180,11 @@ class FARO_Document(object):
         """
 
         # parse input file and join sentences if requested
-        file_lines, metadata = parse_file(document_path)
+        try:
+            file_lines, metadata = parse_file(document_path)
+        except Exception:
+            file_lines = ""
+            metadata = None
 
         self.file_lines = self._preprocess_file_lines(file_lines, split_lines)
         self._get_document_metadata(metadata)
