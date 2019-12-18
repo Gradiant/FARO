@@ -13,7 +13,7 @@ def flatten(iterable):
         else:
             yield el
 
-            
+
 def parse_file(file_path):
     """ Parses a file and returns the list of sentences
 
@@ -32,7 +32,7 @@ def parse_file(file_path):
     requestOptions = {'timeout': timeout}
 
     parsed = {'content': None, 'metadata': None}
-    
+
     try:
         parsed.update(parser.from_file(file_path,
                                        requestOptions=requestOptions))
@@ -40,7 +40,7 @@ def parse_file(file_path):
     except Exception as e:
         logger.error(
             "Unexpected exception during parsing {}".format(e))
-                    
+
         raise e
     filesize = os.path.getsize(file_path)
 
@@ -49,11 +49,11 @@ def parse_file(file_path):
     if parsed['metadata']:
         # Add filesize to metadata
         parsed['metadata']['filesize'] = filesize
-        try:
-            # First check if OCR is disabled by envvar
-            if disable_ocr:
-                return parsed['content'], parsed['metadata']
+        # First check if OCR is disabled by envvar
+        if disable_ocr:
+            return parsed['content'], parsed['metadata']
 
+        try:
             flat_parsed = list(flatten(parsed['metadata']['X-Parsed-By']))
             if any('TesseractOCRParser' in s for s in flat_parsed):
                 # OCR already executed, return
@@ -95,8 +95,10 @@ def parse_file(file_path):
                         parsed['content'] += parsed_ocr_text['content']
         except KeyError as e:
             logger.debug("Did not find key {} in metadata".format(e))
+            raise e
         except Exception as e:
             logger.error(
                 "Unexpected exception while treating PDF OCR strategy {}".format(e))
+            raise e
 
     return parsed['content'], parsed['metadata']
