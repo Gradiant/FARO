@@ -13,6 +13,7 @@ def flatten(iterable):
         else:
             yield el
 
+            
 def parse_file(file_path):
     """ Parses a file and returns the list of sentences
 
@@ -22,7 +23,7 @@ def parse_file(file_path):
 
     """
 
-    ## Retrieve envvars
+    # Retrieve envvars
     timeout = int(os.getenv('FARO_REQUESTS_TIMEOUT', 60))
     pdf_ocr_ratio = int(os.getenv('FARO_PDF_OCR_RATIO', 150))
     disable_ocr = os.getenv('FARO_DISABLE_OCR', False)
@@ -31,7 +32,16 @@ def parse_file(file_path):
     requestOptions = {'timeout': timeout}
 
     parsed = {'content': None, 'metadata': None}
-    parsed.update(parser.from_file(file_path, requestOptions=requestOptions))
+    
+    try:
+        parsed.update(parser.from_file(file_path,
+                                       requestOptions=requestOptions))
+
+    except Exception as e:
+        logger.error(
+            "Unexpected exception during parsing {}".format(e))
+                    
+        raise e
     filesize = os.path.getsize(file_path)
 
     # try to implement a smarter strategy for OCRing PDFs

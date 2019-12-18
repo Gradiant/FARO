@@ -135,14 +135,14 @@ def faro_execute(params):
 
     faro_doc = FARO_Document(input_file, params.split_lines)
 
-    if faro_doc.lang in ACCEPTED_LANGS:
+    if hasattr(faro_doc, "lang") and faro_doc.lang in ACCEPTED_LANGS:
         with open("config/" + faro_doc.lang + ".yaml", "r") as stream:
             config = yaml.load(stream, Loader=yaml.FullLoader)
 
     else:
         logger.debug(("Language {} is not fully supported. All the " +
                       "functionality is only implemented for these languages: {}").format(
-                          faro_doc.lang,
+                          faro_doc.lang if hasattr(faro_doc, "lang") else None,
                           " ".join(ACCEPTED_LANGS)))
 
         with open("config/nolanguage.yaml", "r") as stream:
@@ -193,6 +193,9 @@ def faro_execute(params):
 
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
+    # update score if error in reading metatada is found
+    dict_result["score"] = dict_result["score"] if hasattr(faro_doc, "metadata_error") else "error"
+
     # Adding metadata of fyle type to output
 
     dict_result.update(faro_doc.get_metadata_dict())
@@ -218,7 +221,8 @@ def faro_execute(params):
 
             else:
                 if (_key == "person_position_organization" and
-                        faro_doc.lang not in ACCEPTED_LANGS):
+                    hasattr(faro_doc, "lang")
+                    and faro_doc.lang not in ACCEPTED_LANGS):
 
                     panda_dict[_key] = None
                 else:
