@@ -5,3 +5,5 @@ data/*
 *.orig
 *.log
 output/
+*.list
+!docker_faro_env_example.list
