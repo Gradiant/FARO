@@ -30,14 +30,13 @@ class FARO_Document(object):
         dict_result = OrderedDict()
 
         # Adding metadata of fyle type to output
-        dict_result["meta:content-type"] = self.content_type if hasattr(self, "content_type") else None
-        dict_result["meta:author"] = self.author if hasattr(self, "author") else None
-        dict_result["meta:pages"] = self.num_of_pages if hasattr(self, "num_of_pages") else None
-        dict_result["meta:lang"] = self.lang if hasattr(self, "lang") else None
-        dict_result["meta:date"] = self.creation_date if hasattr(self, "creation_date") else None
-        dict_result["meta:filesize"] = self.filesize if hasattr(self, "filesize") else None
-        dict_result["meta:ocr"] = self.ocr_parsing if hasattr(self, "ocr_parsing") else None
-        # dict_result["meta:error"] = self.metadata_error if hasattr(self, "metadata_error") else None
+        dict_result["meta:content-type"] = getattr(self, "content_type", None)
+        dict_result["meta:author"] =  getattr(self, "author", None)
+        dict_result["meta:pages"] = getattr(self, "num_of_pages", None)
+        dict_result["meta:lang"] = getattr(self, "lang", None)
+        dict_result["meta:date"] = getattr(self, "creation_date", None)
+        dict_result["meta:filesize"] = getattr(self, "filesize", None)
+        dict_result["meta:ocr"] = getattr(self, "ocr_parsing", None)
 
         return dict_result
 
@@ -54,7 +53,7 @@ class FARO_Document(object):
         if metadata is None:
             self.metadata_error = True
             return
-        
+
         # extract content type
         if isinstance(metadata["Content-Type"], list):
             self.content_type = str(metadata["Content-Type"][0])
