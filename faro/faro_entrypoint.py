@@ -194,8 +194,8 @@ def faro_execute(params):
     dict_result = scorer.get_sensitivity_score(accepted_entity_dict)
 
     # update score if error in reading metatada is found
-    dict_result["score"] = dict_result["score"] if hasattr(faro_doc, "metadata_error") else "error"
-
+    if hasattr(faro_doc, "metadata_error"):
+        dict_result["score"] = "error"
     # Adding metadata of fyle type to output
 
     dict_result.update(faro_doc.get_metadata_dict())
