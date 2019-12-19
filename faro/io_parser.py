@@ -81,10 +81,10 @@ def parse_file(file_path):
 
                 if force_ocr:
                     parsed['metadata']['ocr_parsing'] = True
-                    # TODO: Grab only content if tika-python merges our PR
-                    logger.info("PDF file is big but did not get much content...forcing OCR")
+                    logger.info("PDF filesize_chars_ratio: {:.2f}...performing OCR".format(filesize_chars_ratio))
                     parsed_ocr_text = parser.from_file(
                         file_path,
+                        service='text',
                         headers={'X-Tika-PDFOcrStrategy':
                         'ocr_only'},
                         requestOptions=requestOptions)
