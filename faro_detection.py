@@ -78,23 +78,15 @@ def launch(args, defaults, description):
     log_level = os.getenv('FARO_LOG_LEVEL', "INFO")
     log_file = os.getenv('FARO_LOG_FILE', None)
 
-    # set up logging to file - see previous section for more details
-    logging.basicConfig(level=log_level)
-
+    handlers = [logging.StreamHandler()]
     if log_file is not None:
-        console = logging.FileHandler(log_file)
-    else:
-        # define a Handler which writes INFO messages or higher to the sys.stderr
-        console = logging.StreamHandler()
+        handlers.append(logging.FileHandler(log_file))
 
-    console.setLevel(level=log_level)
-    # set a format which is simpler for console use
-    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-    # tell the handler to use this format
-    console.setFormatter(formatter)
-    # add the handler to the root logger
-    logging.getLogger('').addHandler(console)
-    logger = logging.getLogger('basic')
+    logging.basicConfig(
+        level=log_level,
+        format="%(levelname)s: %(name)20s: %(message)s",
+        handlers = handlers
+    )
 
     parameters = process_args(args, defaults, description)
     execute(parameters)
