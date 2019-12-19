@@ -97,6 +97,10 @@ class FARO_Document(object):
             # not supported yet (we consider the document as one page)
             self.num_of_pages = 1
 
+        if isinstance(self.num_of_pages, list):
+            self.num_of_pages = sum([int(num_pages)
+                                     for num_pages in self.num_of_pages])
+
         self.filesize = None
         if "filesize" in metadata:
             self.filesize = metadata["filesize"]
@@ -116,6 +120,9 @@ class FARO_Document(object):
 
         elif "created" in metadata:
             self.creation_date = metadata["created"]
+
+        if isinstance(self.creation_date, list):
+            self.creation_date = self.creation_date[0]
 
         # get the number of words/chars in the document
         # FIXME: (these feats are calculated but not used in output)
