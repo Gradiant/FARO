@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Building gradiant/faro docker image..."
-docker build -t gradiant/faro:1.1.0 .
+docker build -t gradiant/faro:1.1.1 .
 
 git lfs pull
 if [ $? -ne 0 ]
