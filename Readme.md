@@ -55,7 +55,15 @@ The project contains the following folders:
 
 ## Run FARO with Docker
 
-FARO can run as a standalone container using Docker. You can build the image for yourself or get it from Docker Hub repository.
+FARO can run as a standalone container using Docker. You can build the image for yourself or get it from [Docker Hub repository](https://hub.docker.com/).
+
+### Get FARO image from Docker Hub
+
+Provided you have Docker installed and running on your system, execute the following command to get the [latest FARO image](https://hub.docker.com/r/gradiant/faro) from Docker Hub.
+
+```
+docker pull gradiant/faro
+```
 
 ### Build FARO image
 
@@ -71,14 +79,6 @@ Windows
 
 ```
 docker_build_faro.bat
-```
-
-### Get FARO image from Docker Hub
-
-Provided you have Docker installed and running on your system, execute the following command to get the latest FARO image from Docker Hub.
-
-```
-docker pull gradiant/faro
 ```
 
 ### Run FARO container
