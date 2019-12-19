@@ -65,6 +65,8 @@ Provided you have Docker installed and running on your system, execute the follo
 docker pull gradiant/faro
 ```
 
+To run the docker image use the scripts `docker_run_faro.sh` (Linux/Mac OS) or `docker_run_faro.bat` (Windows). You can find them in the root of the project or in the latest release.
+
 ### Build FARO image
 
 Provided you have Docker installed and running on your system, do the following to build the FARO image.
