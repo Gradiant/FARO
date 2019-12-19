@@ -19,7 +19,7 @@ RUN mkdir -p /usr/share/man/man1 && \
     pip3 install -r /requirements.txt && \
     apt-get update && apt-get install -y openjdk-11-jre-headless parallel bash wget \
     tesseract-ocr tesseract-ocr-spa && rm -rf /var/lib/apt/lists/* && \
-    wget -O /tmp/tika-server.jar https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.22/tika-server-1.22.jar
+    wget -O /tmp/tika-server.jar https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.23/tika-server-1.23.jar
 
 COPY . /opt/faro
 WORKDIR /opt/faro

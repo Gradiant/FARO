@@ -7,7 +7,7 @@ mkdir -p output
 TIKA_SERVER_JAR=/tmp/tika-server.jar
 
 if [ ! -f $TIKA_SERVER_JAR ]; then
-   	wget -O $TIKA_SERVER_JAR https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.22/tika-server-1.22.jar
+   	wget -O $TIKA_SERVER_JAR https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.23/tika-server-1.23.jar
 fi
 
 # Default faro tika config file
