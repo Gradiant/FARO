@@ -1,10 +1,14 @@
+1.1.2
+-----
+* Fix issue with logging while forcing OCR on PDF documents
+
 1.1.1
 -----
 
 * Update to tika 1.23
 * Add dockerhub image and update documentation on its use: https://hub.docker.com/r/gradiant/faro
 * Fix #32: logging duplicates
-* Fix #37 : fixing metadata when a list is extracted in some fields (dates and pages)	
+* Fix #37 : fixing metadata when a list is extracted in some fields (dates and pages)
 
 1.1.0
 -----
