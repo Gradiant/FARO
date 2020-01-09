@@ -72,6 +72,7 @@ def parse_file(file_path):
                     force_ocr = True
                 else:
                     filesize_chars_ratio = filesize / chars
+                    logger.debug("PDF filesize_chars_ratio: {:.2f}".format(filesize_chars_ratio))
                     if filesize_chars_ratio > pdf_ocr_ratio:
                         force_ocr = True
                         logger.debug('size: {}, chars: {}, ratio: {}'.format(
@@ -80,8 +81,8 @@ def parse_file(file_path):
                             filesize_chars_ratio))
 
                 if force_ocr:
+                    logger.info("performing OCR on PDF file: {}".format(file_path))
                     parsed['metadata']['ocr_parsing'] = True
-                    logger.info("PDF filesize_chars_ratio: {:.2f}...performing OCR".format(filesize_chars_ratio))
                     parsed_ocr_text = parser.from_file(
                         file_path,
                         service='text',
