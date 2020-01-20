@@ -1,3 +1,20 @@
+partition_feat_list:
+    - person_position_organization
+    - monetary_quantity
+    - signature
+    - personal_email
+    - mobile_phone_number
+    - financial_data
+    - document_id
+    - custom_words
+    - meta:content-type
+    - meta:date
+    - meta:author
+    - meta:pages
+    - meta:lang
+    - meta:filesize
+    - meta:ocr
+
 logfilter_entity_list:
     - Email
     - FinancialData
