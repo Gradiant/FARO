@@ -96,7 +96,7 @@ Linux and Mac OS
 Windows
 
 ```
-./docker_run_faro.bat <your folder with files>
+docker_run_faro.bat <your folder with files>
 ```
 
 We have added OCR support to tika through its tesseract integration. **Some customization of the OCR process can be tweaked through the use of an env file** whose path needs to be provided as the second argument to the script. We have provided a commented example to serve as a template [here](docker_faro_env_example.list)
