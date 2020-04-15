@@ -175,7 +175,7 @@ The list of dependencies are the following:
 * sklearn
 * gensim
 * sklearn-crfsuite
-* fuzzywuzzy
+* rapidfuzz
 * tika
 * gensim
 * pyyaml

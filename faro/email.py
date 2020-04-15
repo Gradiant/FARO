@@ -1,5 +1,4 @@
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+from rapidfuzz import process, fuzz
 
 
 class Corporative_Detection(object):
@@ -22,13 +21,12 @@ class Corporative_Detection(object):
 
         # searching for corporative mails of the type <company>@<company>.com
         _choice = process.extractOne(
-            email_parts[0], [email_parts[1]], scorer=fuzz.ratio)
+            email_parts[0], [email_parts[1]], scorer=fuzz.ratio, score_cutoff=60)
 
-        if _choice[1] > 60:
+        if not _choice:
             return False
 
-        return (True if self.email_model.predict(
-            [email_parts[0]])[0] == "1" else False)
+        return self.email_model.predict([email_parts[0]])[0] == "1"
 
     def __init__(self, email_model, corp_list=None):
         """ Initalization
