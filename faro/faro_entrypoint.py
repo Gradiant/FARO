@@ -7,7 +7,6 @@ import datetime
 import logging
 import pandas as pd
 from collections import OrderedDict
-import gensim.utils as gensim_utils
 from faro.detector import Detector
 from faro.sensitivity_score import Sensitivity_Scorer
 from joblib import load

@@ -1,5 +1,18 @@
 import re
-import gensim.utils as gensim_utils
+
+
+def to_unicode(text, errors='strict'):
+    """Convert `text` (bytestring in given encoding or unicode) to unicode.
+    
+    Keyword arguments:
+    text -- Input text
+    errors --   Error handling behaviour if `text` is a bytestring. (optional)
+ 
+    Returns Unicode version of `text`.
+    """
+    if isinstance(text, str):
+        return text
+    return str(text, "utf-8", errors=errors)
 
 
 def normalize_text_proximity(message):
@@ -44,7 +57,7 @@ def preprocess_text(message):
 
     """
 
-    uni_message = gensim_utils.to_unicode(message)
+    uni_message = to_unicode(message)
     uni_message = uni_message.replace("\t", " ")
     uni_message = uni_message.replace("\r\n", " ")
     uni_message = uni_message.replace("\r", " ")
