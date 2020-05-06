@@ -1,3 +1,5 @@
+# Entities that will appear in the dump of the entities (json file of entities)
+# NOTE: this entities will change their names using the ent_keys_dump dict
 logfilter_entity_list:
     - Email
     - FinancialData
@@ -9,13 +11,16 @@ logfilter_entity_list:
     - CUSTOM
     - PROB_CURRENCY
 
+# Sensitivity ranking list (from lower to higher)
 sensitivity_list:
     - low
     - medium
     - high
 
+# If at least three detections of different KPIs appear in a file the score is automatically leveled up (e.g. from lower to medium).
 sensitivity_multiple_kpis: 3
 
+# Keys that will appear in the dump of the file (on terminal and in the json file with the aggregated detections).
 sensitivity_keys_dump:
     - person_position_organization
     - monetary_quantity
@@ -26,7 +31,7 @@ sensitivity_keys_dump:
     - document_id
     - custom_words
 
-
+# Translation of entity names detected by the regex/ner models to their names as they appear in the output files.
 ent_keys_dump:
     PER: person
     PROF: jobposition
@@ -43,14 +48,18 @@ ent_keys_dump:
     CUSTOM: custom_words
     PROB_CURRENCY: prob_currency
 
+# List of custom words that are potentially sensitive (define your own keywords in a file and point this variable to the path to detect your custom words)
 custom_word_list: config/keywords_custom_words.txt
 
-
+# Maximum distance in characters between a sign pattern detection and a person entity
 signature_max_distance: 15
 
+# If text spans with entities have overlaps and those overlaps have the type contained in this list implies that those detections will be discarded.
 low_priority_list:
     - PROB_CURRENCY
 
+# Dict with entity detections (minimum and maximum) for every sensitivy score. Sensitivy scores must appear in sensitivity_list
+# Every entity has their own min/max detections for every score.
 sensitivity:
     low:
         person_position_organization:
