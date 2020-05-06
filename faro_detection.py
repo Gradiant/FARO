@@ -14,7 +14,7 @@ Created on 13th of March of 2018
 @author: hcerezo
 
 '''
-import yaml
+
 import os
 import sys
 import argparse
