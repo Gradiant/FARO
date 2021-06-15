@@ -2,7 +2,7 @@ import os
 import logging
 import typer
 from os import path
-from flaskmicroservs.server_entrypoint import execute
+from flaskmicroservs_faro.server_entrypoint import execute
 
 
 __version__ = "0.1.0"

@@ -7,6 +7,7 @@ import logging
 from flask import Flask
 from flask_restful import Resource, abort, reqparse, Api
 from flask_cors import CORS
+from faro.faro_entrypoint import faro_execute as execute
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,22 @@ parser_analyse.add_argument('file', type=werkzeug.datastructures.FileStorage,
                             help='Definition cannot be converted.',
                             required=True)
 
+
+class Faro_Parameters(object):
+
+    def __init__(self, input_file,
+                 output_entity_file,
+                 output_score_file,
+                 split_lines,
+                 verbose,
+                 dump):
+        self.input_file = input_file
+        self.output_entity_file = output_entity_file
+        self.output_score_file = output_score_file
+        self.split_lines = split_lines
+        self.verbose = verbose
+        self.dump = dump
+        
 
 class Flask_Analyse(Resource):
     """ Implements the classification API """
@@ -38,26 +55,51 @@ class Flask_Analyse(Resource):
             abort(400)
 
         _file = args["file"]
-        file_name, file_extension = os.path.splitext(_file.name)
+        file_name, file_extension = os.path.splitext(_file.filename)
         
-        logger.info("File Contents? {}".format(_file.read()))
-
+        logger.info("File Extension {}".format(file_extension))
+    
         # Create a temporal file
         temp_name = next(tempfile._get_candidate_names())
 
-        # add the right extension
-        temp_name = temp_name + file_extension
+        # add the right extension and upload folder
+        temp_name = os.path.join(self.upload_folder, temp_name + file_extension)
 
+        logger.info("Temporal name {}".format(temp_name))
+        
         # save the file contents
-        args["file"].save(temp_name)
+        args["file"].save(temp_name)  # FIXME: check the folder
 
-        # TODO: execute FARO
-
-        # TODO: delete files
+        # execute FARO
+        parameters = Faro_Parameters(
+            input_file=temp_name,
+            output_entity_file=temp_name + ".entity",
+            output_score_file=temp_name + ".score",
+            split_lines=False,
+            verbose=False,
+            dump=False
+        )
+            
+        execute(parameters)
         
-        return "OK", 201
+        # Read output
+        with open(temp_name + ".entity", "r") as f_in:
+            entity_object = json.load(f_in)
+
+        with open(temp_name + ".score", "r") as f_in:
+            score_object = json.load(f_in)
+                                      
+        result_object = {"score_file": score_object,
+                         "entity_file": entity_object}
+            
+        # delete temporal files
+        os.remove(temp_name + ".entity")
+        os.remove(temp_name + ".score")
+        os.remove(temp_name)
+        
+        return json.dumps(result_object), 201    
+
     
-        
 class Flask_Server:
     """ Implements the Flask server """
 
@@ -67,7 +109,8 @@ class Flask_Server:
         self.api_rest.add_resource(
             Flask_Analyse,
             "/faro/analyse",
-            resource_class_kwargs={'condition_lock': self.condition_lock})
+            resource_class_kwargs={'condition_lock': self.condition_lock,
+                                   'upload_folder': self.upload_folder})
 
     def __init__(self, service_name="flask_faro",
                  flask_port=5000,
