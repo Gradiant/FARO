@@ -46,6 +46,10 @@ def parse_file(file_path):
     # try to implement a smarter strategy for OCRing PDFs
     force_ocr = False
     if parsed['metadata']:
+
+        logger.info("TEXT {}".format(parsed['content']))
+        logger.info("METADATA {}".format(parsed['metadata']))
+        
         # Add filesize to metadata
         parsed['metadata']['filesize'] = filesize
         # First check if OCR is disabled by envvar
