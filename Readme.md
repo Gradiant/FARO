@@ -110,6 +110,38 @@ for example:
 ./docker_run_faro.sh ../data docker_faro_env_example.list
 ```
 
+### Build alternative FARO image (with Flask server)
+
+With this option an image with a flask server wrapping FARO functionality is created instead.
+
+Execute this command to create the image:
+
+```
+docker build  -f Dockerfile.ELG  -t faro_demo .
+```
+
+#### Run FARO container with Flask
+
+Run the container 
+```
+docker run -d -p 0.0.0.0:5005:5005 faro_demo local_faro_demo
+```
+
+The REST API is created with the following POST URI:
+
+```
+http://<server ip or localhost>:5005/faro/analyse
+```
+
+#### Querying the flask server
+
+Now, you can query the server by sending files (one by one) to the server (e.g. using curl)
+
+```
+curl -X POST  -H "Content-Type: multipart/form-data" -F 'file=@<path_to_your_file>' http://<server ip or localhost>:5005/faro/analyse
+```
+
+
 ### Results
 
 FARO creates an "output" folder inside the current folder and stores the results of the execution in two files:

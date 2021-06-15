@@ -29,4 +29,7 @@ WORKDIR /opt/faro
 RUN mkdir -p /opt/faro/results
 RUN pip3 install . --upgrade
 
+ENV FLASK_PORT=5005
+ENV FLASK_FOLDER=/opt/faro/results
+
 ENTRYPOINT ["./entrypoint_flask.sh"]
